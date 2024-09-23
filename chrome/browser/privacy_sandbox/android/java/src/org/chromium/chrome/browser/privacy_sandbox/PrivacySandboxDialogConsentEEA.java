@@ -14,13 +14,17 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -28,6 +32,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.TextViewWithLeading;
+import org.chromium.url.GURL;
 
 /** Dialog in the form of a consent shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogConsentEEA extends ChromeDialog
@@ -55,8 +60,11 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private ThinWebView mThinWebView;
     private WebContents mWebContents;
+    private WebContentsObserver mWebContentsObserver;
+    private long mPrivacyPolicyClickedTimestamp;
     private final Profile mProfile;
     private final ActivityWindowAndroid mActivityWindowAndroid;
+    private boolean mIsPrivacyPageLoaded;
 
     private boolean mAreAnimationsDisabled;
 
@@ -91,6 +99,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
         mPrivacyPolicyBackButton = mContentView.findViewById(R.id.privacy_policy_back_button);
         mPrivacyPolicyBackButton.setOnClickListener(this);
+        mIsPrivacyPageLoaded = false;
 
         // Controls for the expanding section.
         mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
@@ -232,6 +241,30 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
             if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
                 mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
+                mWebContentsObserver =
+                        new WebContentsObserver(mWebContents) {
+                            @Override
+                            public void didFirstVisuallyNonEmptyPaint() {
+                                if (!mIsPrivacyPageLoaded) {
+                                    RecordHistogram.recordTimesHistogram(
+                                            "PrivacySandbox.PrivacyPolicy.LoadingTime",
+                                            System.currentTimeMillis()
+                                                    - mPrivacyPolicyClickedTimestamp);
+                                    mIsPrivacyPageLoaded = true;
+                                }
+                            }
+
+                            @Override
+                            public void didFailLoad(
+                                    boolean isInPrimaryMainFrame,
+                                    int errorCode,
+                                    GURL failingUrl,
+                                    @LifecycleState int rfhLifecycleState) {
+                                RecordHistogram.recordSparseHistogram(
+                                        "PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode",
+                                        errorCode);
+                            }
+                        };
                 // TODO(crbug.com/366010532): Add in functionality to add language code to the url
                 mThinWebView =
                         PrivacySandboxDialogController.createThinWebView(
@@ -261,9 +294,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
      * @param view The View that was clicked (typically the TextView containing the link).
      */
     private void onPrivacyPolicyClicked(View view) {
+        RecordUserAction.record("Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked");
+        mPrivacyPolicyClickedTimestamp = System.currentTimeMillis();
         mPrivacyPolicyContent.removeAllViews();
-        // TODO(crbug.com/365582305): Measure the time it takes from the user clicking on the link
-        // to the page actually loading.
         if (mThinWebView != null && mThinWebView.getView() != null) {
             mConsentViewContainer.setVisibility(View.GONE);
             mPrivacyPolicyContent.addView(mThinWebView.getView());
@@ -275,10 +308,12 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     protected void onStop() {
         super.onStop();
 
-        // Clean up the ThinWebView and WebContents when the dialog is stopped
+        // Clean up the WebContents, WebContentsObserver and when the dialog is stopped
         if (mThinWebView != null) {
             mWebContents.destroy();
             mWebContents = null;
+            mWebContentsObserver.destroy();
+            mWebContentsObserver = null;
             mThinWebView.destroy();
             mThinWebView = null;
         }

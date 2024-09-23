@@ -47,7 +47,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -93,6 +95,7 @@ public final class PrivacySandboxDialogTest {
     private Dialog mDialog;
     private String mTestPage;
     private EmbeddedTestServer mTestServer;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -105,10 +108,12 @@ public final class PrivacySandboxDialogTest {
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
         PrivacySandboxDialogController.disableAnimationsForTesting(true);
         SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        mUserActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() {
+        mUserActionTester.tearDown();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Dismiss the dialog between the tests. Necessary due to batching.
@@ -230,6 +235,13 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_policy_back_button))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked"));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("PrivacySandbox.PrivacyPolicy.LoadingTime");
+        watcher.pollInstrumentationThreadUntilSatisfied();
         // Click back button
         onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
         // Validate EEA Consent is shown

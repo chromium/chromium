@@ -1263,6 +1263,15 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-01">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the error code if the Privacy Policy page failed to load.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.PrivacyPolicy.LoadingTime" units="ms"
     expires_after="2025-08-01">
   <owner>chrstne@google.com</owner>
