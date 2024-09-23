@@ -56,7 +56,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         base::BindLambdaForTesting(
@@ -66,16 +66,15 @@ class SearchEngineTabHelperTest : public PlatformTest {
               return model;
             }));
 
-    browser_state_ = std::move(builder).Build();
-    web::WebState::CreateParams params(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
 
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state(),
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        web_state(), ios::FaviconServiceFactory::GetForProfile(
+                         profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
     SearchEngineTabHelper::CreateForWebState(web_state());
     server_.ServeFilesFromSourceDirectory(".");
     ASSERT_TRUE(server_.Start());
@@ -84,9 +83,8 @@ class SearchEngineTabHelperTest : public PlatformTest {
 
   // Returns the testing TemplateURLService.
   TemplateURLService* template_url_service() {
-    ChromeBrowserState* browser_state =
-        ChromeBrowserState::FromBrowserState(browser_state_.get());
-    return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+    ProfileIOS* profile = ProfileIOS::FromBrowserState(profile_.get());
+    return ios::TemplateURLServiceFactory::GetForProfile(profile);
   }
 
   web::WebState* web_state() { return web_state_.get(); }
@@ -97,7 +95,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 
   net::EmbeddedTestServer server_;
@@ -207,27 +205,25 @@ class SearchEngineTabHelperIncognitoTest : public SearchEngineTabHelperTest {
   void SetUp() override {
     SearchEngineTabHelperTest::SetUp();
 
-    ChromeBrowserState* incognito_browser_state =
-        browser_state_->GetOffTheRecordChromeBrowserState();
+    ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
 
     // TemplateURLServiceFactory redirects to the original profile, so it
-    // doesn't really matter which browser state is used in tests to interact
+    // doesn't really matter which profile is used in tests to interact
     // with TemplateURLService.
     ASSERT_EQ(template_url_service(),
-              ios::TemplateURLServiceFactory::GetForBrowserState(
-                  incognito_browser_state));
+              ios::TemplateURLServiceFactory::GetForProfile(incognito_profile));
 
-    web::WebState::CreateParams params(incognito_browser_state);
+    web::WebState::CreateParams params(incognito_profile);
     incognito_web_state_ = web::WebState::Create(params);
     incognito_web_state_->SetKeepRenderProcessAlive(true);
 
     // SearchEngineTabHelper depends on WebFaviconDriver, which must be created
-    // before and using the original (non-incognito) browser state, in
+    // before and using the original (non-incognito) profile, in
     // consistency with the logic in AttachTabHelpers().
     favicon::WebFaviconDriver::CreateForWebState(
         incognito_web_state(),
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        ios::FaviconServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
     SearchEngineTabHelper::CreateForWebState(incognito_web_state());
   }
 

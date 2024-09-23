@@ -14,12 +14,6 @@
 namespace ios {
 
 // static
-TemplateURLFetcher* TemplateURLFetcherFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 TemplateURLFetcher* TemplateURLFetcherFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<TemplateURLFetcher*>(
@@ -45,8 +39,8 @@ std::unique_ptr<KeyedService>
 TemplateURLFetcherFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return std::make_unique<TemplateURLFetcher>(
-      TemplateURLServiceFactory::GetForBrowserState(
-          static_cast<ChromeBrowserState*>(context)));
+      TemplateURLServiceFactory::GetForProfile(
+          static_cast<ProfileIOS*>(context)));
 }
 
 web::BrowserState* TemplateURLFetcherFactory::GetBrowserStateToUse(

@@ -132,7 +132,7 @@ enum class SearchEngineSettingVersion {
     _prefService = browserState->GetPrefs();
 
     _searchEngineChoiceService =
-        ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
+        ios::SearchEngineChoiceServiceFactory::GetForProfile(browserState);
     // TODO(b/362460183): Remove `kDeprecatedSettings` and deprecated settings
     // UI.
     BOOL shouldShowUpdatedSettings =

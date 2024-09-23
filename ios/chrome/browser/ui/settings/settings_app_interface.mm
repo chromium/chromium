@@ -115,7 +115,7 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
   search_engines::SearchEngineChoiceService* searchEngineChoiceService =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(browserState);
   std::unique_ptr<TemplateURLData> templateURLData =
       TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
           prefs, searchEngineChoiceService,

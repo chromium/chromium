@@ -18,9 +18,6 @@ namespace ios {
 // Profile.
 class TemplateURLFetcherFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static TemplateURLFetcher* GetForBrowserState(ProfileIOS* profile);
-
   static TemplateURLFetcher* GetForProfile(ProfileIOS* profile);
   static TemplateURLFetcherFactory* GetInstance();
 

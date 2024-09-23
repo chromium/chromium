@@ -40,18 +40,17 @@ base::RepeatingClosure GetDefaultSearchProviderChangedCallback() {
 
 std::unique_ptr<KeyedService> BuildTemplateURLService(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<TemplateURLService>(
-      CHECK_DEREF(browser_state->GetPrefs()),
-      CHECK_DEREF(ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
-          browser_state)),
+      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(
+          ios::SearchEngineChoiceServiceFactory::GetForProfile(profile)),
       std::make_unique<ios::UIThreadSearchTermsData>(),
       ios::WebDataServiceFactory::GetKeywordWebDataForProfile(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<ios::TemplateURLServiceClientImpl>(
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::EXPLICIT_ACCESS)),
+          ios::HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS)),
       GetDefaultSearchProviderChangedCallback());
 }
 

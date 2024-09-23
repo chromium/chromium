@@ -95,9 +95,9 @@
       [[SearchEngineChoiceViewController alloc] initWithFirstRunMode:_firstRun];
   _viewController.actionDelegate = self;
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(originalBrowserState);
+      ios::TemplateURLServiceFactory::GetForProfile(originalBrowserState);
   search_engines::SearchEngineChoiceService* searchEngineChoiceService =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(
           originalBrowserState);
   _mediator = [[SearchEngineChoiceMediator alloc]
       initWithTemplateURLService:templateURLService
