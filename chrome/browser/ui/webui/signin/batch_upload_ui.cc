@@ -15,6 +15,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/batch_upload_resources.h"
 #include "chrome/grit/batch_upload_resources_map.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
@@ -27,6 +29,16 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kBatchUploadResources, kBatchUploadResourcesSize),
       IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"batchUploadTitle", IDS_BATCH_UPLOAD_TITLE},
+      {"saveToAccount", IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL},
+      {"cancel", IDS_CANCEL},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
+
+  source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
 }
 
 BatchUploadUI::~BatchUploadUI() = default;

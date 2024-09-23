@@ -13,6 +13,7 @@ import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_col
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
 import {getCss} from './batch_upload_app.css.js';
 import {getHtml} from './batch_upload_app.html.js';
@@ -87,7 +88,9 @@ export interface BatchUploadAppElement {
   };
 }
 
-export class BatchUploadAppElement extends CrLitElement {
+const BatchUploadAppElementBase = I18nMixinLit(CrLitElement);
+
+export class BatchUploadAppElement extends BatchUploadAppElementBase {
   static get is() {
     return 'batch-upload-app';
   }

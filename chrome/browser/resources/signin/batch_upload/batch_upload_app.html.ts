@@ -11,7 +11,7 @@ export function getHtml(this: BatchUploadAppElement) {
   return html`
 <div id="batchUploadDialog">
   <div id="header">
-    <div id="title">Save data to account</div>
+    <div id="title">${this.i18n('batchUploadTitle')}</div>
     <div id="subtitle">
       ${this.getDialogSubtitle_()} and other items are saved only to this device. To use them on your other devices, save them in your account.
     </div>
@@ -60,9 +60,11 @@ export function getHtml(this: BatchUploadAppElement) {
   </div>
 
   <div id="action-row" class="action-container">
-    <cr-button id='close-button' @click="${this.close_}">Close</cr-button>
+    <cr-button id='close-button' @click="${this.close_}">
+      ${this.i18n('cancel')}
+    </cr-button>
     <cr-button id='save-button' class="action-button" @click="${this.close_}">
-      Save in account
+      ${this.i18n('saveToAccount')}
     </cr-button>
   </div>
 
