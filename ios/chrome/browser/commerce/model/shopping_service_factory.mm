@@ -80,8 +80,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* state) const {
-  ChromeBrowserState* chrome_state =
-      ChromeBrowserState::FromBrowserState(state);
+  ProfileIOS* chrome_state = ProfileIOS::FromBrowserState(state);
   PrefService* pref_service = chrome_state ? chrome_state->GetPrefs() : nullptr;
 
   if (IsIOSParcelTrackingEnabled()) {
@@ -91,21 +90,21 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
-      ios::BookmarkModelFactory::GetForBrowserState(chrome_state),
+      ios::BookmarkModelFactory::GetForProfile(chrome_state),
       OptimizationGuideServiceFactory::GetForProfile(chrome_state),
       pref_service, IdentityManagerFactory::GetForProfile(chrome_state),
-      SyncServiceFactory::GetForBrowserState(chrome_state),
+      SyncServiceFactory::GetForProfile(chrome_state),
       chrome_state->GetSharedURLLoaderFactory(),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(chrome_state),
-      PowerBookmarkServiceFactory::GetForBrowserState(chrome_state), nullptr,
+          ->GetForProfile(chrome_state),
+      PowerBookmarkServiceFactory::GetForProfile(chrome_state), nullptr,
       nullptr, /**ProductSpecificationsService not currently used on iOS
                   b/329431295 */
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
-          ->GetForBrowserState(chrome_state),
-      ios::HistoryServiceFactory::GetForBrowserState(
+          ->GetForProfile(chrome_state),
+      ios::HistoryServiceFactory::GetForProfile(
           chrome_state, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<commerce::WebExtractorImpl>());
 }

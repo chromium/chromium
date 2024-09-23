@@ -158,7 +158,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -178,33 +178,28 @@ class CommercePushNotificationClientTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(builder));
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     scene_state_foreground_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_state_foreground_.activationLevel =
         SceneActivationLevelForegroundActive;
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             scene_state_foreground_);
+    browser_ =
+        std::make_unique<TestBrowser>(profile_.get(), scene_state_foreground_);
     scene_state_background_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_state_background_.activationLevel = SceneActivationLevelBackground;
-    background_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_.get(), scene_state_background_);
+    background_browser_ =
+        std::make_unique<TestBrowser>(profile_.get(), scene_state_background_);
     browser_list_->AddBrowser(browser_.get());
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     // Pretend account bookmark sync is on and bookmarks have been downloaded
     // from the server, required for price tracking.
     bookmark_model_->CreateAccountPermanentFolders();
-    ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get())
+    ios::AccountBookmarkSyncServiceFactory::GetForProfile(profile_.get())
         ->SetIsTrackingMetadataForTesting();
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+        commerce::ShoppingServiceFactory::GetForBrowserState(profile_.get()));
     application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
@@ -217,7 +212,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
 
   Browser* GetBrowser() { return browser_.get(); }
 
-  ChromeBrowserState* GetBrowserState() { return chrome_browser_state_.get(); }
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
   Browser* GetBackgroundBrowser() { return background_browser_.get(); }
 
@@ -249,7 +244,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
   CommercePushNotificationClient commerce_push_notification_client_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> background_browser_;
-  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
   raw_ptr<BrowserList> browser_list_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
@@ -294,7 +289,7 @@ TEST_F(CommercePushNotificationClientTest, TestParsing) {
 TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
   MockDelegate mock_delegate;
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(GetBrowserState());
+      OptimizationGuideServiceFactory::GetForProfile(GetProfile());
   optimization_guide_service->GetHintsManager()
       ->push_notification_manager()
       ->SetDelegate(&mock_delegate);

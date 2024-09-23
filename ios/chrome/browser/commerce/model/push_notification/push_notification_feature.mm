@@ -14,15 +14,15 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
+bool IsPriceTrackingEnabled(ProfileIOS* profile) {
   if (!IsPriceNotificationsEnabled()) {
     return false;
   }
 
-  DCHECK(browser_state);
-  // May be null during testing or if browser state is off-the-record.
+  DCHECK(profile);
+  // May be null during testing or if profile is off-the-record.
   commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state);
+      commerce::ShoppingServiceFactory::GetForBrowserState(profile);
 
   return service && service->IsShoppingListEligible();
 }

@@ -29,15 +29,15 @@ void OnProductInfoUrl(
 // Returns whether the price notification should be presented
 // for `web_state`.
 bool ShouldPresentPriceNotifications(web::WebState* web_state) {
-  ChromeBrowserState* const browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* const profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
 
-  if (!IsPriceTrackingEnabled(browser_state)) {
+  if (!IsPriceTrackingEnabled(profile)) {
     return false;
   }
 
   feature_engagement::Tracker* const tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browser_state);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   if (!tracker->WouldTriggerHelpUI(
           feature_engagement ::kIPHPriceNotificationsWhileBrowsingFeature)) {
     return false;

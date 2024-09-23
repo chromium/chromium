@@ -25,16 +25,15 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(chrome_browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   DCHECK(authentication_service);
   if (!authentication_service->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return false;
   }
-  PrefService* pref_service = chrome_browser_state->GetPrefs();
+  PrefService* pref_service = profile->GetPrefs();
   if (!unified_consent::UrlKeyedDataCollectionConsentHelper::
            NewAnonymizedDataCollectionConsentHelper(pref_service)
                ->IsEnabled() ||

@@ -10,7 +10,7 @@
 // Determine if the price drop notifications and ShoppingService are enabled.
 // Use this function if the code embedded in the check relies on using the
 // ShoppingService.
-bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state);
+bool IsPriceTrackingEnabled(ProfileIOS* profile);
 
 // Determine if price drop notifications are enabled. Use this function if the
 // code you're guarding against is purely push notification infrastructure.

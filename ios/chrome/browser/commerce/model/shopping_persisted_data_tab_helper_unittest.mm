@@ -94,7 +94,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
   }
 
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
@@ -103,11 +103,10 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_state_->GetPrefs()->SetBoolean(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
@@ -115,8 +114,8 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
     auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
+        AuthenticationServiceFactory::GetInstance()->GetForProfile(
+            profile_.get()));
     auth_service_->SignIn(fake_identity_,
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
@@ -129,11 +128,11 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     optimization_guide::OptimizationMetadata metadata;
     metadata.set_any_metadata(any_metadata);
     OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
     optimization_guide_service->AddHintForTesting(
         GURL(kPriceDropUrl), optimization_guide::proto::PRICE_TRACKING,
         metadata);
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     ShoppingPersistedDataTabHelper::CreateForWebState(&web_state_);
   }
 
@@ -179,7 +178,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   web::FakeNavigationContext context_;
   id<SystemIdentity> fake_identity_ = nil;

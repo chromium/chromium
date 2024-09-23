@@ -127,7 +127,7 @@ CommercePushNotificationClient::GetShoppingService() {
 }
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForBrowserState(GetAnyProfile());
+  return ios::BookmarkModelFactory::GetForProfile(GetAnyProfile());
 }
 
 bool CommercePushNotificationClient::HandleNotificationInteraction(
