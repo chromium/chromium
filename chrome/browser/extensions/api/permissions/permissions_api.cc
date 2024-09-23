@@ -59,6 +59,9 @@ constexpr char kExtensionHasSiteAccessError[] =
 constexpr char kExtensionHasNoHostPermissionsError[] =
     "Extension cannot add a site access request when it does not have any host "
     "permissions.";
+constexpr char kExtensionHasNoHostPermissionsForPatternError[] =
+    "Extension cannot add a site access request with a pattern that does match "
+    "any of its host permissions.";
 constexpr char kExtensionRequestCannotBeRemovedError[] =
     "Extension cannot remove a site access request that doesn't exist.";
 constexpr char kInvalidPatternError[] =
@@ -600,6 +603,22 @@ PermissionsAddSiteAccessRequestFunction::Run() {
       extension()->permissions_data()->HasTabPermissionsForSecurityOrigin(
           tab_id, url)) {
     return RespondNow(Error(kExtensionHasSiteAccessError));
+  }
+
+  // Request is invalid if pattern provided does not match the extension's host
+  // permissions.
+  if (pattern) {
+    const PermissionSet& required_permissions =
+        PermissionsParser::GetRequiredPermissions(extension());
+    const PermissionSet& optional_permissions =
+        PermissionsParser::GetOptionalPermissions(extension());
+    URLPatternSet pattern_list;
+    pattern_list.AddPattern(*pattern);
+
+    if (!required_permissions.effective_hosts().OverlapsWith(pattern_list) &&
+        !optional_permissions.effective_hosts().OverlapsWith(pattern_list)) {
+      return RespondNow(Error(kExtensionHasNoHostPermissionsForPatternError));
+    }
   }
 
   permissions_manager->AddSiteAccessRequest(web_contents, tab_id, *extension(),

@@ -854,28 +854,53 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
         tab_id, extension->id()));
   }
+}
 
-  // Add site access request for a pattern that does not match the current site.
+// Test extension can add a site access request with a pattern for a site it has
+// host permissions for and has withheld site access. Request is only valid if
+// pattern matches the extension's host permissions.
+TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
+       AddSiteAccessRequestWithPattern_RequestedSite) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Extension")
+          .AddHostPermission("*://*.requested.com/*")
+          .Build();
+  AddExtensionAndWithheldPermissions(*extension);
+
+  // Open tab on a url requested by the extension.
+  NavigateTo("http://www.requested.com");
+  int tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  auto* permissions_manager = PermissionsManager::Get(profile());
+
+  // Add site access request for a pattern that does not match the extension's
+  // host permissions.
   {
-    // Function should succeed since we don't want to reveal information
-    // about the current site to the extension, but request is not added.
+    // Function should fail since pattern doesn't match the extension's host
+    // permissions.
     auto function =
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
-    EXPECT_TRUE(api_test_utils::RunFunction(
+    std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
         GetFunctionParams(tab_id, "*://www.not-requested.com/*"), profile(),
-        api_test_utils::FunctionMode::kNone));
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot add a site access request with a pattern that does "
+        "match any of its host permissions.",
+        error);
 
     // Verify site access request was not added.
     EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request for a pattern that matches the current site, and
-  // extension has withheld site access.
+  // Add site access request for a pattern that matches the extension's host
+  // permissions and the current site.
   {
-    // Function should succeed since extension can be granted access.
+    // Function should succeed since pattern matches the extension's host
+    // permissions.
     auto function =
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
@@ -888,9 +913,9 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         tab_id, extension->id()));
   }
 
-  // Add site access request for a pattern that does not match the current site
-  // but will match on a cross-origin navigation, and extension has withheld
-  // site access.
+  // Add site access request for a pattern that matches the extension's host
+  // permissions and does not match the current site but will match on a
+  // cross-origin navigation.
   {
     // Function should succeed since extension can be granted access.
     auto function =
@@ -950,17 +975,22 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         tab_id, extension->id()));
   }
 
-  // Add site access request for a pattern that matches the current site.
+  // Add site access request with a pattern that matches the current site but
+  // doesn't match the extension's host permissions.
   {
-    // Function should succeed since we don't want to reveal information
-    // about the current site to the extension, but request is not added.
+    // Function should fail since pattern doesn't match the extension's host
+    // permissions.
     auto function =
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
-    EXPECT_TRUE(api_test_utils::RunFunction(
+    std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
         GetFunctionParams(tab_id, "*://www.not-requested.com/*"), profile(),
-        api_test_utils::FunctionMode::kNone));
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot add a site access request with a pattern that does "
+        "match any of its host permissions.",
+        error);
 
     // Verify site access request was not added.
     EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
