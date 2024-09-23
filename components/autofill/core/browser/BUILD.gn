@@ -1343,6 +1343,11 @@ source_set("unit_tests") {
     ]
   }
 
+  if (is_win || is_mac || is_android || is_ios) {
+    sources +=
+        [ "payments/credit_card_access_manager_mandatory_reauth_unittest.cc" ]
+  }
+
   if (!is_ios && !is_android) {
     sources += [
       "payments/local_card_migration_manager_unittest.cc",
