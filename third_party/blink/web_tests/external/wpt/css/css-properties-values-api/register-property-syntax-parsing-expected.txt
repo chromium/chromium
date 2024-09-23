@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] syntax:'<length>', initialValue:'calc(5px * 3px / 6px)' is valid
+  Failed to execute 'registerProperty' on 'CSS': The initial value provided does not parse for the given syntax.
+Harness: the test ran to completion.
+

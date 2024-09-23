@@ -318,6 +318,16 @@ double CSSPrimitiveValue::ComputeSeconds(
   return CSSValueClampingUtils::ClampTime(result);
 }
 
+double CSSPrimitiveValue::ComputeDotsPerPixel(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK(IsResolution());
+  double result =
+      IsCalculated()
+          ? To<CSSMathFunctionValue>(this)->ComputeDotsPerPixel(length_resolver)
+          : To<CSSNumericLiteralValue>(this)->ComputeDotsPerPixel();
+  return CSSValueClampingUtils::ClampDouble(result);
+}
+
 template <>
 int CSSPrimitiveValue::ComputeLength(
     const CSSLengthResolver& length_resolver) const {

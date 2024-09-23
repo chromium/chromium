@@ -3003,7 +3003,8 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       // Note that GetDoubleValue automatically clamps according to the
       // permitted range.
       return *CSSNumericLiteralValue::Create(
-          math_value.GetDoubleValue(), CSSPrimitiveValue::UnitType::kNumber);
+          math_value.ComputeNumber(css_to_length_conversion_data),
+          CSSPrimitiveValue::UnitType::kNumber);
     }
 
     if (primitive_value->IsAngle()) {
@@ -3014,13 +3015,13 @@ static const CSSValue& ComputeRegisteredPropertyValue(
 
     if (primitive_value->IsTime()) {
       return *CSSNumericLiteralValue::Create(
-          primitive_value->ComputeSeconds(),
+          primitive_value->ComputeSeconds(css_to_length_conversion_data),
           CSSPrimitiveValue::UnitType::kSeconds);
     }
 
     if (primitive_value->IsResolution()) {
       return *CSSNumericLiteralValue::Create(
-          primitive_value->ComputeDotsPerPixel(),
+          primitive_value->ComputeDotsPerPixel(css_to_length_conversion_data),
           CSSPrimitiveValue::UnitType::kDotsPerPixel);
     }
   }

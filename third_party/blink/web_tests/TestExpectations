@@ -2589,7 +2589,6 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hwb.html [ Cr
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-lab.html [ Crash Pass ]
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Crash Pass Timeout ]
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
-crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/368657256 external/wpt/css/css-text-decor/text-emphasis-position-auto-001.html [ Failure ]

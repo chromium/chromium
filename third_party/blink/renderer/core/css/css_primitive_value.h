@@ -363,6 +363,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   double ComputeDegrees(const CSSLengthResolver&) const;
   double ComputeSeconds(const CSSLengthResolver&) const;
+  double ComputeDotsPerPixel(const CSSLengthResolver&) const;
 
   // Computes a length in pixels, resolving relative lengths
   template <typename T>
