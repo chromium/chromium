@@ -5241,6 +5241,30 @@
             ]
         }
     ],
+    "ChromnientImageContextMenuActions": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CopyAndSaveAsImageEnabled",
+                    "params": {
+                        "enable-copy-as-image": "true",
+                        "enable-save-as-image": "true",
+                        "text-received-timeout": "2000"
+                    },
+                    "enable_features": [
+                        "LensOverlayImageContextMenuActions"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientPostLaunch": [
         {
             "platforms": [
