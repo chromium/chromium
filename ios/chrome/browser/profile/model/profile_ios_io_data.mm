@@ -88,7 +88,7 @@ void ProfileIOSIOData::InitializeOnUIThread(
   params->io_thread = GetApplicationContext()->GetIOSChromeIOThread();
 
   params->cookie_settings =
-      ios::CookieSettingsFactory::GetForBrowserState(browser_state);
+      ios::CookieSettingsFactory::GetForProfile(browser_state);
   params->host_content_settings_map =
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
 

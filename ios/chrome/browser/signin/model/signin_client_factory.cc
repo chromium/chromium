@@ -45,7 +45,7 @@ std::unique_ptr<KeyedService> SigninClientFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<IOSChromeSigninClient>(
       chrome_browser_state,
-      ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
+      ios::CookieSettingsFactory::GetForProfile(chrome_browser_state),
       ios::HostContentSettingsMapFactory::GetForBrowserState(
           chrome_browser_state));
 }

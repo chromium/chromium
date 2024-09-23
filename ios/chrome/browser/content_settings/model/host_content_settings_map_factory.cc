@@ -42,7 +42,7 @@ HostContentSettingsMapFactory::~HostContentSettingsMapFactory() {}
 bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
     const {
   // HostContentSettingsMap is required to initialize the PrefService of
-  // the ChromeBrowserState as it is part of the implementation of the
+  // the ProfileIOS as it is part of the implementation of the
   // SupervisedUserPrefStore.
   return true;
 }
@@ -50,22 +50,20 @@ bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
 scoped_refptr<RefcountedKeyedService>
 HostContentSettingsMapFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  if (browser_state->IsOffTheRecord()) {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  if (profile->IsOffTheRecord()) {
     // If off-the-record, retrieve the host content settings map of the parent
-    // browser state to ensure the preferences have been migrated.
-    GetForBrowserState(browser_state->GetOriginalChromeBrowserState());
+    // profile to ensure the preferences have been migrated.
+    GetForProfile(profile->GetOriginalProfile());
   }
 
   // TODO(crbug.com/40130635): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.
-  const bool is_off_the_record = browser_state->IsOffTheRecord();
+  const bool is_off_the_record = profile->IsOffTheRecord();
   const bool should_record_metrics = !is_off_the_record;
   return base::MakeRefCounted<HostContentSettingsMap>(
-      browser_state->GetPrefs(), is_off_the_record,
-      false /* store_last_modified */, false /*restore_session*/,
-      should_record_metrics);
+      profile->GetPrefs(), is_off_the_record, false /* store_last_modified */,
+      false /*restore_session*/, should_record_metrics);
 }
 
 web::BrowserState* HostContentSettingsMapFactory::GetBrowserStateToUse(

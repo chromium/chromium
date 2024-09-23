@@ -16,11 +16,11 @@ class CookieSettings;
 
 namespace ios {
 // Singleton that owns all CookieSettings and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class CookieSettingsFactory : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<content_settings::CookieSettings> GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static scoped_refptr<content_settings::CookieSettings> GetForProfile(
+      ProfileIOS* profile);
   static CookieSettingsFactory* GetInstance();
 
   CookieSettingsFactory(const CookieSettingsFactory&) = delete;
