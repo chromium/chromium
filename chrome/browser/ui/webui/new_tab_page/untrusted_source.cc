@@ -289,7 +289,7 @@ void UntrustedSource::ServeBackgroundImage(
   }
   ui::TemplateReplacements replacements;
   replacements["url"] = url.spec();
-  if (url_2x.is_valid()) {
+  if (url_2x.is_valid() && !IsURLBlockedByPolicy(url_2x)) {
     replacements["backgroundUrl"] =
         base::StringPrintf("image-set(url(%s) 1x, url(%s) 2x)",
                            url.spec().c_str(), url_2x.spec().c_str());
