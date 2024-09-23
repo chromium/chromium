@@ -2600,6 +2600,7 @@ void StyleEngine::InvalidateForRuleSetChanges(
           ? To<ShadowRoot>(tree_scope).host()
           : *tree_scope.GetDocument().documentElement());
 
+  NthIndexCache nth_index_cache(tree_scope.GetDocument());
   ApplyRuleSetInvalidationForTreeScope(
       tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
       changed_rule_sets, changed_rule_flags, invalidation_scope);
@@ -4169,10 +4170,9 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
         use_color_adjust_background =
             LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
       }
-    } else if (
-        root_color_scheme != owner_color_scheme_ &&
-        // https://html.spec.whatwg.org/C#is-initial-about:blank
-        !view->GetFrame().Loader().IsOnInitialEmptyDocument()) {
+    } else if (root_color_scheme != owner_color_scheme_ &&
+               // https://html.spec.whatwg.org/C#is-initial-about:blank
+               !view->GetFrame().Loader().IsOnInitialEmptyDocument()) {
       // Iframes should paint a solid background if the embedding iframe has a
       // used color-scheme different from the used color-scheme of the embedded
       // root element. Normally, iframes as transparent by default.
