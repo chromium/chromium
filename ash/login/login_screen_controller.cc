@@ -32,6 +32,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -282,6 +283,7 @@ void LoginScreenController::LaunchPublicSession(
   if (!client_) {
     return;
   }
+  SYSLOG(INFO) << "MGS: Requesting manual launch";
   client_->LaunchPublicSession(account_id, locale, input_method);
 }
 

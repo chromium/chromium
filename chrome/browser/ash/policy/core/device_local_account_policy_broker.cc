@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -276,6 +277,7 @@ std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
+  SYSLOG(INFO) << "Loaded device local account policy for " << account_id_;
   UpdateRefreshDelay();
   UpdateExtensionListFromStore();
   policy_update_callback_.Run();
