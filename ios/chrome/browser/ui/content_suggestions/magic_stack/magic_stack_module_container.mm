@@ -282,10 +282,13 @@ const CGFloat kSeparatorHeight = 0.5;
 
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
-  // The "See More" button takes precedence over the notifications opt-in
-  // button.
-  _notificationsOptInButton.hidden =
-      config.shouldShowSeeMore || !config.showNotificationsOptIn;
+  // The notifications opt-in button is hidden if either the "See More"
+  // button or the module's subtitle is displayed, or if the option is disabled
+  // in the configuration. This ensures the user focuses on the primary
+  // elements (See More/subtitle) before being presented with the opt-in.
+  _notificationsOptInButton.hidden = !_seeMoreButton.isHidden ||
+                                     !_subtitle.isHidden ||
+                                     !config.showNotificationsOptIn;
 
   if ([self shouldShowSubtitle]) {
     // TODO(crbug.com/40279482): Update MagicStackModuleContainer to take an id
@@ -462,15 +465,11 @@ const CGFloat kSeparatorHeight = 0.5;
   [_delegate enableNotifications:_type];
 }
 
-// Determines if a subtitle should be displayed based on the
-// `ContentSuggestionsModuleType`. Returns `NO` if a Magic Stack module action
-// button is currently displayed.
+// Determines if a subtitle should be displayed. Currently, a subtitle is
+// shown only when both the "See More" button and the notifications opt-in
+// button are hidden.
 - (BOOL)shouldShowSubtitle {
-  if (!_seeMoreButton.isHidden || !_notificationsOptInButton.isHidden) {
-    return NO;
-  }
-
-  if (_type == ContentSuggestionsModuleType::kSafetyCheck) {
+  if (_seeMoreButton.isHidden && _notificationsOptInButton.isHidden) {
     return YES;
   }
 
