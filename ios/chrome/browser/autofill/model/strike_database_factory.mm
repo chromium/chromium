@@ -14,11 +14,6 @@
 namespace autofill {
 
 // static
-StrikeDatabase* StrikeDatabaseFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 StrikeDatabase* StrikeDatabaseFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<StrikeDatabase*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
