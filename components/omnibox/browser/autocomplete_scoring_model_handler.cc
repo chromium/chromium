@@ -296,6 +296,56 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
 
         val = static_cast<float>(matches_title_or_host_or_shortcut_text);
       } break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_NUM_INPUT_TERMS_MATCHED_BY_BOOKMARK_TITLE:
+        if (scoring_signals.has_num_input_terms_matched_by_bookmark_title()) {
+          val = static_cast<float>(
+              scoring_signals.num_input_terms_matched_by_bookmark_title());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_SITE_ENGAGEMENT:
+        if (scoring_signals.has_site_engagement()) {
+          val = static_cast<float>(scoring_signals.site_engagement());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_SEARCH_SUGGEST_RELEVANCE:
+        if (scoring_signals.has_search_suggest_relevance()) {
+          val = static_cast<float>(scoring_signals.search_suggest_relevance());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_IS_SEARCH_SUGGEST_ENTITY:
+        if (scoring_signals.has_is_search_suggest_entity()) {
+          val = static_cast<float>(scoring_signals.is_search_suggest_entity());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_VERBATIM:
+        if (scoring_signals.has_is_verbatim()) {
+          val = static_cast<float>(scoring_signals.is_verbatim());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_NAVSUGGEST:
+        if (scoring_signals.has_is_navsuggest()) {
+          val = static_cast<float>(scoring_signals.is_navsuggest());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_IS_SEARCH_SUGGEST_TAIL:
+        if (scoring_signals.has_is_search_suggest_tail()) {
+          val = static_cast<float>(scoring_signals.is_search_suggest_tail());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_ANSWER_SUGGEST:
+        if (scoring_signals.has_is_answer_suggest()) {
+          val = static_cast<float>(scoring_signals.is_answer_suggest());
+        }
+        break;
+      case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_CALCULATOR_SUGGEST:
+        if (scoring_signals.has_is_calculator_suggest()) {
+          val = static_cast<float>(scoring_signals.is_calculator_suggest());
+        }
+        break;
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_UNKNOWN:
       default:
         // Reached when the metadata is updated to have a new signal that
