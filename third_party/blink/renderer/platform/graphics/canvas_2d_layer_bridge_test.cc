@@ -141,7 +141,7 @@ class Canvas2DLayerBridgeTest : public Test {
       accelerated_compositing_scope_;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
+TEST_F(Canvas2DLayerBridgeTest, NoRecreationOfResourceProviderAfterDraw) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
   EXPECT_TRUE(Host()->IsResourceValid());
@@ -149,10 +149,16 @@ TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
   uint32_t gen_id = bridge->GetOrCreateResourceProvider()->ContentUniqueID();
   Canvas().drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
   EXPECT_EQ(gen_id, bridge->GetOrCreateResourceProvider()->ContentUniqueID());
+}
+
+TEST_F(Canvas2DLayerBridgeTest, GetResourceProviderWhenContextIsLost) {
+  std::unique_ptr<Canvas2DLayerBridge> bridge =
+      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
+  EXPECT_TRUE(Host()->IsResourceValid());
+  cc::PaintFlags flags;
+  EXPECT_TRUE(bridge->GetOrCreateResourceProvider());
   test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_EQ(nullptr, bridge->GetOrCreateResourceProvider());
-  // The following passes by not crashing
-  bridge->NewImageSnapshot(FlushReason::kTesting);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
