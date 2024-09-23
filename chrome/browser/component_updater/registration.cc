@@ -29,6 +29,7 @@
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
+#include "chrome/browser/component_updater/open_cookie_database_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
@@ -231,6 +232,8 @@ void RegisterComponentsForUpdate() {
   // TODO(crbug.com/364795294): Support Android platform.
   RegisterTranslateKitComponent(cus, g_browser_process->local_state());
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  RegisterOpenCookieDatabaseComponent(cus);
 }
 
 }  // namespace component_updater

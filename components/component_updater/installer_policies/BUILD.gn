@@ -57,6 +57,8 @@ static_library("installer_policies_with_content_deps") {
     "history_search_strings_component_installer.h",
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
+    "open_cookie_database_component_installer_policy.cc",
+    "open_cookie_database_component_installer_policy.h",
     "optimization_hints_component_installer.cc",
     "optimization_hints_component_installer.h",
   ]
@@ -78,6 +80,7 @@ source_set("unit_tests") {
     "first_party_sets_component_installer_policy_unittest.cc",
     "history_search_strings_component_installer_unittest.cc",
     "masked_domain_list_component_installer_policy_unittest.cc",
+    "open_cookie_database_component_installer_policy_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "plus_address_blocklist_component_installer_unittest.cc",
     "tpcd_metadata_component_installer_policy_unittest.cc",
