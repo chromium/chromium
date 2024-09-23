@@ -241,6 +241,11 @@ const char kDataSharingName[] = "Data Sharing";
 const char kDataSharingDescription[] =
     "Enabled Data Sharing related UI and features.";
 
+const char kHistorySyncAlternativeIllustrationName[] =
+    "History Sync Alternative Illustration";
+const char kHistorySyncAlternativeIllustrationDescription[] =
+    "Enables history sync alternative illustration.";
+
 const char kDeprecateUnloadName[] = "Deprecate the unload event";
 const char kDeprecateUnloadDescription[] =
     "Controls the default for Permissions-Policy unload. If enabled, unload "

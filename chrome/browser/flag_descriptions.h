@@ -177,6 +177,9 @@ extern const char kCustomizeChromeWallpaperSearchInspirationCardDescription[];
 extern const char kDataSharingName[];
 extern const char kDataSharingDescription[];
 
+extern const char kHistorySyncAlternativeIllustrationName[];
+extern const char kHistorySyncAlternativeIllustrationDescription[];
+
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 

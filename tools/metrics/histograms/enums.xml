@@ -20063,6 +20063,7 @@ from previous Chrome versions.
   <int value="-76445689" label="WasmCodeCache:enabled"/>
   <int value="-76348564" label="PointerLockOptions:enabled"/>
   <int value="-75418012" label="ContextualSuggestionsOptOut:disabled"/>
+  <int value="-75396730" label="UseAlternateHistorySyncIllustration:disabled"/>
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
   <int value="-72904030" label="ChromeRefresh2023:enabled"/>
@@ -23998,6 +23999,7 @@ from previous Chrome versions.
       label="CrOSLateBootArcVmAAudioMMAPLowLatency:disabled"/>
   <int value="1557680135" label="PartitionedCookies:disabled"/>
   <int value="1557709833" label="AutomaticFullscreenContentSetting:disabled"/>
+  <int value="1558191881" label="UseAlternateHistorySyncIllustration:enabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
   <int value="1558757619"
       label="AccessibilitySelectToSpeakPageMigration:enabled"/>
