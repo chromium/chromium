@@ -33,6 +33,10 @@ namespace {
 
 // Delay after which items are fetched if the request is delayed.
 constexpr base::TimeDelta kFetchItemsDelay = base::Seconds(0.5);
+// Number of items to fetch for the first page.
+constexpr NSInteger kFirstPageSize = 20;
+// Number of items to fetch for the next pages.
+constexpr NSInteger kNextPageSize = 50;
 
 // A param to add to the default query to order the drive items as folders
 // first, modification time as the second criteria.
@@ -740,8 +744,11 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
                             _sortingDirection, _searchText, _pageToken);
   }
 
+  // Set page size according to whether this is the first page or not.
+  query.page_size = append ? kNextPageSize : kFirstPageSize;
+
   __weak __typeof(self) weakSelf = self;
-  _driveList->ListItems(query, base::BindOnce(^(const DriveListResult& result) {
+  _driveList->ListFiles(query, base::BindOnce(^(const DriveListResult& result) {
                           [weakSelf handleListItemsResponse:result
                                                    animated:animated];
                         }));
