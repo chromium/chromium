@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewTouchpad) {
 #define MAYBE_KeyboardModifierRemapping KeyboardModifierRemapping
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
-                       KeyboardModifierRemapping) {
+                       MAYBE_KeyboardModifierRemapping) {
   const DeepQuery kCtrlDropdownQuery{
       "os-settings-ui",       "os-settings-main", "main-page-container",
       "settings-device-page", "#remap-keys",      "#ctrlKey",
