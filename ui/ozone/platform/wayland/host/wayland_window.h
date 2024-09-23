@@ -219,6 +219,8 @@ class WaylandWindow : public PlatformWindow,
   void SetTitle(const std::u16string& title) override;
   void SetCapture() override;
   void ReleaseCapture() override;
+  void SetVideoCapture() override;
+  void ReleaseVideoCapture() override;
   bool HasCapture() const override;
   void SetFullscreen(bool fullscreen, int64_t target_display_id) override;
   void Maximize() override;
@@ -459,6 +461,8 @@ class WaylandWindow : public PlatformWindow,
   gfx::Rect AdjustBoundsToConstraintsDIP(const gfx::Rect& bounds_dip);
 
   const gfx::Rect& restored_bounds_dip() const { return restored_bounds_dip_; }
+
+  WaylandFrameManager* frame_manager() { return frame_manager_.get(); }
 
   // Configure related:
 

@@ -475,8 +475,9 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     // Setup frame callback if wayland_surface will commit this buffer.
     // On Mutter, we don't receive frame.callback acks if we don't attach a
     // new wl_buffer, which leads to graphics freeze. So only setup
-    // frame_callback when we're attaching a different buffer.
-    if (!frame->wl_frame_callback) {
+    // frame_callback when we're attaching a different buffer and frame
+    // callbacks are not being skipped due to video capture in the background.
+    if (!frame->wl_frame_callback && !should_skip_frame_callbacks_) {
       static constexpr wl_callback_listener kFrameCallbackListener = {
           .done = &OnFrameDone};
       TRACE_EVENT_INSTANT("wayland", "CreateFrameCallback", "cb_owner_frame_id",
@@ -963,6 +964,66 @@ void WaylandFrameManager::Hide() {
   pending_frames_.clear();
 
   MaybeProcessSubmittedFrames();
+}
+
+void WaylandFrameManager::SetVideoCapture() {
+  ++video_capture_count_;
+  VLOG(1) << __func__ << " new capture count=" << video_capture_count_;
+  EvaluateShouldSkipFrameCallbacks();
+}
+
+void WaylandFrameManager::ReleaseVideoCapture() {
+  DCHECK_GT(video_capture_count_, 0);
+  --video_capture_count_;
+  VLOG(1) << __func__ << " new capture count=" << video_capture_count_;
+  EvaluateShouldSkipFrameCallbacks();
+}
+
+void WaylandFrameManager::OnWindowActivationChanged() {
+  VLOG(1) << __func__ << " is_active=" << window_->IsActive();
+  EvaluateShouldSkipFrameCallbacks();
+}
+
+void WaylandFrameManager::EvaluateShouldSkipFrameCallbacks() {
+  bool prev_skip_frame_callbacks = should_skip_frame_callbacks_;
+  // When video capture is active compositor can stop sending frame callbacks
+  // [1]. Ideally we should check for suspended state here in addition to the
+  // video capture state. But mutter sends suspended state 3 seconds later when
+  // window is obscured [2] [3] and KDE does not send suspended state in this
+  // case [4]. So as a compromise fallback to not using frame callbacks
+  // when the window is not active and video capture is active.
+  //
+  // TODO(crbug.com/364197252): Switch to using suspended state instead when
+  // that is reliable.
+  //
+  // [1] https://wayland.app/protocols/wayland#wl_surface:request:frame
+  // [2] https://gitlab.gnome.org/GNOME/mutter/-/issues/3663.
+  // [3]
+  // https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/3019/diffs#0d2bb2c9a5b108a9e8d01556d3f3bf5d3e4ecca2_115_117
+  // [4] https://bugs.kde.org/show_bug.cgi?id=492924
+  should_skip_frame_callbacks_ =
+      video_capture_count_ > 0 && !window_->IsActive();
+
+  // The following is needed to prevent a graphics freeze when the
+  // window is fully obscured at the same time as being inactive, e.g. by
+  // hitting Alt+tab to switch windows.
+  // This is because it could be that at this point the frame callback could
+  // be already blocked. So we need to unblock and discard those frames.
+  if (!prev_skip_frame_callbacks && should_skip_frame_callbacks_) {
+    // Clear existing frame callback.
+    if (!submitted_frames_.empty() &&
+        submitted_frames_.back()->wl_frame_callback) {
+      submitted_frames_.back()->wl_frame_callback.reset();
+      submitted_frames_.back()->feedback = gfx::PresentationFeedback::Failure();
+    }
+
+    MaybeProcessSubmittedFrames();
+
+    // Now we need to ensure pending frames are processed again.
+    // It should be safe to do so as after this point frame callbacks will not
+    // be used.
+    MaybeProcessPendingFrame();
+  }
 }
 
 void WaylandFrameManager::ClearStates() {

@@ -59,6 +59,7 @@ struct WaylandFrame {
 
  private:
   friend class WaylandFrameManager;
+  friend class WaylandFrameManagerTest;
 
   uint32_t frame_id;
   raw_ptr<WaylandSurface, DanglingUntriaged> root_surface;
@@ -130,11 +131,20 @@ class WaylandFrameManager {
   // Similar to ClearStates(), but does not clear submitted frames.
   void Hide();
 
+  void SetVideoCapture();
+  void ReleaseVideoCapture();
+
+  void OnWindowActivationChanged();
+
   static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
 
  private:
+  friend class WaylandFrameManagerTest;
+
   void PlayBackFrame(std::unique_ptr<WaylandFrame> frame);
   void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
+
+  void EvaluateShouldSkipFrameCallbacks();
 
   // Configures |surface| but does not commit wl_surface states yet.
   // Returns whether or not changes require a commit to the wl_surface.
@@ -229,6 +239,12 @@ class WaylandFrameManager {
   base::OneShotTimer freeze_timeout_timer_;
 
   base::OneShotTimer presentation_flush_timer_;
+
+  int video_capture_count_ = 0;
+
+  // Indicates if fallback rendering should be used by not relying on frame
+  // callbacks.
+  bool should_skip_frame_callbacks_ = false;
 
   base::WeakPtrFactory<WaylandFrameManager> weak_factory_;
 };

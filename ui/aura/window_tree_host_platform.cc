@@ -184,6 +184,18 @@ WindowTreeHostPlatform::GetKeyboardLayoutMap() {
 #endif
 }
 
+void WindowTreeHostPlatform::OnVideoCaptureLockCreated() {
+  if (platform_window_) {
+    platform_window_->SetVideoCapture();
+  }
+}
+
+void WindowTreeHostPlatform::OnVideoCaptureLockDestroyed() {
+  if (platform_window_) {
+    platform_window_->ReleaseVideoCapture();
+  }
+}
+
 void WindowTreeHostPlatform::SetCursorNative(gfx::NativeCursor cursor) {
   if (cursor == current_cursor_)
     return;

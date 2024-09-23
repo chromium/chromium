@@ -99,12 +99,19 @@ class ScopedLocalSurfaceIdValidator {
 }  // namespace
 
 WindowTreeHost::VideoCaptureLock::~VideoCaptureLock() {
-  if (host_)
-    host_->DecrementVideoCaptureCount();
+  if (host_) {
+    if (NativeWindowOcclusionTracker::
+            IsNativeWindowOcclusionTrackingAlwaysEnabled(host_.get())) {
+      host_->DecrementVideoCaptureCountForOcclusionTracking();
+    }
+    host_->OnVideoCaptureLockDestroyed();
+  }
 }
 
 WindowTreeHost::VideoCaptureLock::VideoCaptureLock(WindowTreeHost* host)
-    : host_(host->GetWeakPtr()) {}
+    : host_(host->GetWeakPtr()) {
+  host_->OnVideoCaptureLockCreated();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // WindowTreeHost, public:
@@ -373,10 +380,12 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
   raw_occlusion_state_ = raw_occlusion_state;
   raw_occluded_region_ = raw_occluded_region;
 
-  auto state = video_capture_count_ > 0 ? Window::OcclusionState::VISIBLE
-                                        : raw_occlusion_state;
-  auto occluded_region =
-      video_capture_count_ > 0 ? SkRegion() : raw_occluded_region;
+  auto state = video_capture_count_for_occlusion_tracking_ > 0
+                   ? Window::OcclusionState::VISIBLE
+                   : raw_occlusion_state;
+  auto occluded_region = video_capture_count_for_occlusion_tracking_ > 0
+                             ? SkRegion()
+                             : raw_occluded_region;
 
   if (occlusion_state_ == state && occluded_region_ == occluded_region) {
     return;
@@ -403,6 +412,10 @@ gfx::Rect WindowTreeHost::CalculateRootWindowBounds() const {
   return GetTransformedRootWindowBoundsFromPixelSize(
       GetBoundsInPixels().size());
 }
+
+void WindowTreeHost::OnVideoCaptureLockCreated() {}
+
+void WindowTreeHost::OnVideoCaptureLockDestroyed() {}
 
 std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
 WindowTreeHost::RequestUnadjustedMovement() {
@@ -441,13 +454,12 @@ void WindowTreeHost::UnlockMouse(Window* window) {
 
 std::unique_ptr<WindowTreeHost::VideoCaptureLock>
 WindowTreeHost::CreateVideoCaptureLock() {
-  if (!NativeWindowOcclusionTracker::
+  if (NativeWindowOcclusionTracker::
           IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
-    return nullptr;
+    ++video_capture_count_for_occlusion_tracking_;
+    MaybeUpdateComposibleVisibilityForVideoLockCountChange();
   }
 
-  ++video_capture_count_;
-  MaybeUpdateComposibleVisibilityForVideoLockCountChange();
   // WrapUnique() is used as constructor is private.
   return base::WrapUnique(new VideoCaptureLock(this));
 }
@@ -669,15 +681,15 @@ void WindowTreeHost::SetNativeWindowOcclusionEnabled(bool enable) {
 ////////////////////////////////////////////////////////////////////////////////
 // WindowTreeHost, private:
 
-void WindowTreeHost::DecrementVideoCaptureCount() {
-  DCHECK_GT(video_capture_count_, 0);
-  --video_capture_count_;
+void WindowTreeHost::DecrementVideoCaptureCountForOcclusionTracking() {
+  DCHECK_GT(video_capture_count_for_occlusion_tracking_, 0);
+  --video_capture_count_for_occlusion_tracking_;
   MaybeUpdateComposibleVisibilityForVideoLockCountChange();
 }
 
 void WindowTreeHost::MaybeUpdateComposibleVisibilityForVideoLockCountChange() {
   // Only need to check for changes when transitioning between lock and no lock.
-  if (video_capture_count_ > 1) {
+  if (video_capture_count_for_occlusion_tracking_ > 1) {
     return;
   }
   // If we no longer have video capture locks, update the occlusion state to
@@ -721,12 +733,12 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
       // TODO(crbug.com/40208263): For lacros, make sure non-maximized but
       // occluded windows are visible.
       // The compositor needs to be visible when capturing video.
-      return video_capture_count_ != 0;
+      return video_capture_count_for_occlusion_tracking_ != 0;
     }
     case Window::OcclusionState::HIDDEN:
       // TODO: On windows, this likely needs other changes to really work
       // (such as when an HWND is iconified it is sized to 0x0).
-      return video_capture_count_ != 0;
+      return video_capture_count_for_occlusion_tracking_ != 0;
   }
 }
 
@@ -770,7 +782,7 @@ bool WindowTreeHost::ShouldThrottle() const {
   // Only throttle if allowed and there are no video captures and we are
   // occluded.
   DCHECK(NativeOcclusionAffectsThrottle());
-  return video_capture_count_ == 0 &&
+  return video_capture_count_for_occlusion_tracking_ == 0 &&
          occlusion_state_ == Window::OcclusionState::OCCLUDED;
 }
 

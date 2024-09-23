@@ -545,6 +545,14 @@ void WaylandWindow::ReleaseCapture() {
   // See comment in SetCapture() for details on wayland and grabs.
 }
 
+void WaylandWindow::SetVideoCapture() {
+  frame_manager_->SetVideoCapture();
+}
+
+void WaylandWindow::ReleaseVideoCapture() {
+  frame_manager_->ReleaseVideoCapture();
+}
+
 bool WaylandWindow::HasCapture() const {
   return connection_->window_manager()->located_events_grabber() == this;
 }

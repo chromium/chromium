@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
@@ -687,6 +688,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   }
 
   if (did_active_change) {
+    frame_manager()->OnWindowActivationChanged();
     if (active_bubble()) {
       ActivateBubble(is_active_ ? active_bubble() : nullptr);
     } else {

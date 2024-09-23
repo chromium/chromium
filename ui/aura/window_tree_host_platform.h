@@ -117,6 +117,9 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   bool IsKeyLocked(ui::DomCode dom_code) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 
+  void OnVideoCaptureLockCreated() override;
+  void OnVideoCaptureLockDestroyed() override;
+
  private:
   gfx::AcceleratedWidget widget_;
   std::unique_ptr<ui::PlatformWindow> platform_window_;

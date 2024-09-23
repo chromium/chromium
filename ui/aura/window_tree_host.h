@@ -404,10 +404,13 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // Calculates the root window bounds to be used by UpdateRootwindowSize().
   virtual gfx::Rect CalculateRootWindowBounds() const;
 
+  virtual void OnVideoCaptureLockCreated();
+  virtual void OnVideoCaptureLockDestroyed();
+
  private:
   friend class test::WindowTreeHostTestApi;
 
-  void DecrementVideoCaptureCount();
+  void DecrementVideoCaptureCountForOcclusionTracking();
   void MaybeUpdateComposibleVisibilityForVideoLockCountChange();
   void MaybeUpdateCompositorVisibilityForNativeOcclusion();
   bool CalculateCompositorVisibilityFromOcclusionState() const;
@@ -502,7 +505,8 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   bool accelerated_widget_made_visible_ = false;
 
   // Number of VideoCaptureLocks that have been created and not destroyed.
-  int video_capture_count_ = 0;
+  // This is only used when occlusion tracking is always enabled.
+  int video_capture_count_for_occlusion_tracking_ = 0;
 
   base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 };

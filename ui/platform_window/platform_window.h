@@ -70,6 +70,12 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void ReleaseCapture() = 0;
   virtual bool HasCapture() const = 0;
 
+  // Sets and releases video capture state for the platform-window.
+  virtual void SetVideoCapture();
+  // NOTE: This may not be called if the platform-window is deleted while
+  // video capture is still active.
+  virtual void ReleaseVideoCapture();
+
   // Enters or exits fullscreen when `fullscreen` is true or false respectively.
   // This operation may have no effect if the window is already in the specified
   // state. `target_display_id` indicates the display where the window should be
