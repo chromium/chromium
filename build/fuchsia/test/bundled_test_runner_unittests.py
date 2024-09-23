@@ -24,75 +24,78 @@ class BundledTestRunnerTests(unittest.TestCase):
 
     def test_resolve_test_package_into_far(self):
         runner = _BundledTestRunner(
-            'out/put', 'target-id', [],
-            [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            'out/put', [BundledTestRunnerTests._default_test_case()],
+            'target-id', None, '/tmp/log', [], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': 'out/put/dart_runner_tests.far'})
 
     def test_dedupe_fars(self):
         runner = _BundledTestRunner(
-            'out/put', 'target-id', ['dart_runner_tests.far'],
-            [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            'out/put', [BundledTestRunnerTests._default_test_case()],
+            'target-id', None, '/tmp/log', ['dart_runner_tests.far'], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': 'out/put/dart_runner_tests.far'})
 
     def test_absolute_path(self):
         runner = _BundledTestRunner(
-            'out/put', 'target-id', ['/tmp/packages/dart_runner_tests.far'],
-            [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            'out/put', [BundledTestRunnerTests._default_test_case()],
+            'target-id', None, '/tmp/log',
+            ['/tmp/packages/dart_runner_tests.far'], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': '/tmp/packages/dart_runner_tests.far'})
 
     def test_different_cm(self):
-        runner = _BundledTestRunner('out/put', 'target-id', [], [
+        runner = _BundledTestRunner('out/put', [
             TestCase(
                 package=
                 'fuchsia-pkg://fuchsia.com/dart_runner_tests#meta/meta.cm')
-        ], '/tmp/log')
+        ], 'target-id', None, '/tmp/log', [], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': 'out/put/dart_runner_tests.far'})
 
     def test_join_relative_path(self):
         runner = _BundledTestRunner(
-            'out/default', 'target-id', ['gen/dart_runner_tests.far'],
-            [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            'out/default', [BundledTestRunnerTests._default_test_case()],
+            'target-id', None, '/tmp/log', ['gen/dart_runner_tests.far'], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': 'out/default/gen/dart_runner_tests.far'})
 
     def test_current_dir_as_out_dir(self):
         runner = _BundledTestRunner(
-            '.', 'target-id', ['out/default/bin/dart_runner_tests.far'],
-            [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            '.', [BundledTestRunnerTests._default_test_case()], 'target-id',
+            None, '/tmp/log', ['out/default/bin/dart_runner_tests.far'], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': './out/default/bin/dart_runner_tests.far'})
 
     def test_empty_out_dir(self):
         runner = _BundledTestRunner(
-            '', 'target-id', ['out/default/bin/dart_runner_tests.far'],
-            [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            '', [BundledTestRunnerTests._default_test_case()], 'target-id',
+            None, '/tmp/log', ['out/default/bin/dart_runner_tests.far'], None)
         self.assertEqual(
             runner._package_deps,
             {'dart_runner_tests': 'out/default/bin/dart_runner_tests.far'})
 
     def test_none_out_dir(self):
         with self.assertRaises(TypeError):
-            _BundledTestRunner(None, 'target-id',
-                               ['out/default/bin/dart_runner_tests.far'],
+            _BundledTestRunner(None,
                                [BundledTestRunnerTests._default_test_case()],
-                               '/tmp/log')
+                               'target-id', None, '/tmp/log',
+                               ['out/default/bin/dart_runner_tests.far'], None)
 
     def test_conflict_fars(self):
         with self.assertRaises(AssertionError):
-            _BundledTestRunner('', 'target-id', [
-                'out/default/bin/dart_runner_tests.far',
-                'not/out/default/bin/dart_runner_tests.far'
-            ], [BundledTestRunnerTests._default_test_case()], '/tmp/log')
+            _BundledTestRunner('',
+                               [BundledTestRunnerTests._default_test_case()],
+                               'target-id', None, '/tmp/log', [
+                                   'out/default/bin/dart_runner_tests.far',
+                                   'not/out/default/bin/dart_runner_tests.far'
+                               ], None)
 
 
 if __name__ == '__main__':
