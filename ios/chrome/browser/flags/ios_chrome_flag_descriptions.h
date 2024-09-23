@@ -895,6 +895,11 @@ extern const char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[];
 extern const char
     kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[];
 
+// Title and description for the flag to enable the Segmentation Tips Manager
+// for Chrome iOS.
+extern const char kSegmentationTipsManagerName[];
+extern const char kSegmentationTipsManagerDescription[];
+
 // Title and description for the flag to enable personalized messaging for
 // Default Browser First Run, Set Up List, and video promos.
 extern const char kSegmentedDefaultBrowserPromoName[];

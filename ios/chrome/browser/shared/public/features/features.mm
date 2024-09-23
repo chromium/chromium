@@ -923,6 +923,14 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
              "SegmentationPlatformIosModuleRankerCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationTipsManager,
+             "SegmentationTipsManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSegmentationTipsManagerEnabled() {
+  return base::FeatureList::IsEnabled(kSegmentationTipsManager);
+}
+
 BASE_FEATURE(kDefaultBrowserPromoIPadExperimentalString,
              "DefaultBrowserPromoIPadExperimentalString",
              base::FEATURE_DISABLED_BY_DEFAULT);

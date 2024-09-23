@@ -769,6 +769,12 @@ bool IsPrefetchingSystemCapabilitiesOnAppStartup();
 // Feature flag for caching the ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
 
+// Feature to enable the Segmentation Tips Manager for Chrome iOS.
+BASE_DECLARE_FEATURE(kSegmentationTipsManager);
+
+// Whether the Segmentation Tips Manager is enabled for Chrome iOS.
+bool IsSegmentationTipsManagerEnabled();
+
 // Feature flag for default browser promo experimental string for iPad.
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoIPadExperimentalString);
 

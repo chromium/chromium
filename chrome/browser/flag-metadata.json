@@ -8060,6 +8060,11 @@
     "expiry_milestone" : 115
   },
   {
+    "name": "segmentation-tips-manager",
+    "owners": ["bwwilliams@google.com","thegreenfrog@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "segmented-default-browser-promo",
     "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 135

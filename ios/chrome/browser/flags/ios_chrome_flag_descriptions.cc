@@ -1009,6 +1009,10 @@ const char kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
     "Enables the Magic Stack module ranking to be split by surface for "
     "engagement";
 
+const char kSegmentationTipsManagerName[] = "Enable Segmentation Tips Manager";
+const char kSegmentationTipsManagerDescription[] =
+    "Enables the Segmentation Tips Manager for Chrome iOS";
+
 const char kSegmentedDefaultBrowserPromoName[] =
     "Enable Personalized Messaging in Default Browser Promos";
 const char kSegmentedDefaultBrowserPromoDescription[] =

@@ -1954,6 +1954,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxOnClobberFocusTypeOnIOSDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxOnClobberFocusTypeOnContent)},
+    {"segmentation-tips-manager",
+     flag_descriptions::kSegmentationTipsManagerName,
+     flag_descriptions::kSegmentationTipsManagerDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSegmentationTipsManager)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
