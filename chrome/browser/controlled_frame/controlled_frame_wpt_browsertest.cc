@@ -28,7 +28,8 @@ namespace controlled_frame {
 namespace {
 auto kTestFiles = testing::Values("camera.window.js",
                                   "geolocation.window.js",
-                                  "new_window.window.js");
+                                  "new_window.window.js",
+                                  "scheme.window.js");
 
 constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
 constexpr char kTestHarnessPath[] =

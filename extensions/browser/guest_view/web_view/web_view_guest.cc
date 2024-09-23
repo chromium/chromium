@@ -1605,6 +1605,16 @@ void WebViewGuest::LoadURLWithParams(
        !url.SchemeIs(url::kAboutScheme)) ||
       url.SchemeIs(url::kJavaScriptScheme);
 
+  // Controlled Frame further restricts allowed schemes to http, https, blob,
+  // data, and about.
+  if (IsOwnedByControlledFrameEmbedder()) {
+    if (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme) &&
+        !url.SchemeIs(url::kDataScheme) && !url.SchemeIs(url::kBlobScheme) &&
+        !url.SchemeIs(url::kAboutScheme)) {
+      scheme_is_blocked = true;
+    }
+  }
+
   // Do not allow navigating a guest to schemes other than known safe schemes.
   // This will block the embedder trying to load unwanted schemes, e.g.
   // chrome://.
