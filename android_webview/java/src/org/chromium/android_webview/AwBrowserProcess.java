@@ -594,45 +594,53 @@ public final class AwBrowserProcess {
      * org.chromium.android_webview.services.ComponentsProviderService}.
      */
     public static void loadComponents() {
-        ComponentLoaderPolicyBridge[] componentPolicies =
-                AwBrowserProcessJni.get().getComponentLoaderPolicies();
-        // Don't connect to the service if there are no components to load.
-        if (componentPolicies.length == 0) {
-            return;
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("AwBrowserProcess.loadComponents")) {
+            ComponentLoaderPolicyBridge[] componentPolicies =
+                    AwBrowserProcessJni.get().getComponentLoaderPolicies();
+            // Don't connect to the service if there are no components to load.
+            if (componentPolicies.length == 0) {
+                return;
+            }
+            EmbeddedComponentLoader loader =
+                    new EmbeddedComponentLoader(Arrays.asList(componentPolicies));
+            final Intent intent = new Intent();
+            intent.setClassName(
+                    getWebViewPackageName(),
+                    EmbeddedComponentLoader.AW_COMPONENTS_PROVIDER_SERVICE);
+            loader.connect(intent);
         }
-        EmbeddedComponentLoader loader =
-                new EmbeddedComponentLoader(Arrays.asList(componentPolicies));
-        final Intent intent = new Intent();
-        intent.setClassName(
-                getWebViewPackageName(), EmbeddedComponentLoader.AW_COMPONENTS_PROVIDER_SERVICE);
-        loader.connect(intent);
     }
 
     /** Initialize the metrics uploader. */
     public static void initializeMetricsLogUploader() {
-        boolean metricServiceEnabledOnlySdkRuntime =
-                ContextUtils.isSdkSandboxProcess()
-                        && AwFeatureMap.isEnabled(
-                                AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("AwBrowserProcess.initializeMetricsLogUploader")) {
+            boolean metricServiceEnabledOnlySdkRuntime =
+                    ContextUtils.isSdkSandboxProcess()
+                            && AwFeatureMap.isEnabled(
+                                    AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
 
-        if (metricServiceEnabledOnlySdkRuntime
-                || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
-            boolean isAsync =
-                    AwFeatureMap.isEnabled(
-                            AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
-            AwMetricsLogUploader uploader = new AwMetricsLogUploader(isAsync);
-            // Open a connection during startup while connecting to other services such as
-            // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
-            // nonembedded ":webview_service" twice.
-            uploader.initialize();
-            AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(uploader));
-        } else {
-            AndroidMetricsLogConsumer directUploader =
-                    data -> {
-                        PlatformServiceBridge.getInstance().logMetrics(data);
-                        return HttpURLConnection.HTTP_OK;
-                    };
-            AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(directUploader));
+            if (metricServiceEnabledOnlySdkRuntime
+                    || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
+                boolean isAsync =
+                        AwFeatureMap.isEnabled(
+                                AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
+                AwMetricsLogUploader uploader = new AwMetricsLogUploader(isAsync);
+                // Open a connection during startup while connecting to other services such as
+                // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
+                // nonembedded ":webview_service" twice.
+                uploader.initialize();
+                AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(uploader));
+            } else {
+                AndroidMetricsLogConsumer directUploader =
+                        data -> {
+                            PlatformServiceBridge.getInstance().logMetrics(data);
+                            return HttpURLConnection.HTTP_OK;
+                        };
+                AndroidMetricsLogUploader.setConsumer(
+                        new MetricsFilteringDecorator(directUploader));
+            }
         }
     }
 

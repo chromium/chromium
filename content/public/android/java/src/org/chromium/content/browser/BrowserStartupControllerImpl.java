@@ -327,7 +327,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
 
     @VisibleForTesting
     void flushStartupTasks() {
-        BrowserStartupControllerImplJni.get().flushStartupTasks();
+        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("flushStartupTasks")) {
+            BrowserStartupControllerImplJni.get().flushStartupTasks();
+        }
     }
 
     @Override
