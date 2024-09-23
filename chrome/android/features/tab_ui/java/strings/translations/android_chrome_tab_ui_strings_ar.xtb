@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">عرض معلومات المتجر</translation>
 <translation id="6557858706263317126">‎<ph name="HIDDEN_TABS_COUNT" />+</translation>
 <translation id="6562820390860419811">نقل علامة التبويب إلى اليمين</translation>
+<translation id="6590332670428149473">فتح قائمة الإجراءات لمجموعة علامات التبويب التي تمّت مشاركتها "<ph name="TITLE_OF_GROUP" />" وتظهر بلون <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">عرض</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{تم تغيير علامة تبويب واحدة (<ph name="ONE_CHANGED" />)}zero{تم تغيير <ph name="MANY_CHANGED" /> علامة تبويب}two{تم تغيير علامتَي تبويب (<ph name="MANY_CHANGED" />)}few{تم تغيير <ph name="MANY_CHANGED" /> علامات تبويب}many{تم تغيير <ph name="MANY_CHANGED" /> علامة تبويب}other{تم تغيير <ph name="MANY_CHANGED" /> علامة تبويب}}</translation>
 <translation id="6694634756612002311">إدارة المشاركة</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{توسيع المجموعة التي تحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع المجموعة التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9111228330448174435">عرض مربّع الحوار عند إنشاء مجموعة علامات تبويب جديدة</translation>
+<translation id="9114502155681725011">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /></translation>
 <translation id="9150694013019234766">يمكنك التبديل بين علامات التبويب ضمن المجموعة بالقرب من أسفل الشاشة.</translation>
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>
 <translation id="9216898458513705996">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" /> عليها</translation>

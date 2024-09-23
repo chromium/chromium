@@ -2229,6 +2229,7 @@
 <translation id="2546991196809436099">‏הגדלת התצוגה כדי להגדיל את הפריטים שמופיעים במסך. כדי להפעיל או להשבית את תכונת ההגדלה, מקישים על מקש החיפוש + Ctrl‏ + M.</translation>
 <translation id="2548347166720081527">ההרשאה <ph name="PERMISSION" /> הוענקה</translation>
 <translation id="2548545707296594436">‏איפוס המטמון של פרופיל ה-eSIM</translation>
+<translation id="2549766998450508148">‏מקישים על 1-4 מקשי צירוף (Ctrl,‏ Alt,‏ Shift או מקש החיפוש) ועוד מקש אחד. אפשר גם לבחור מקש יחיד.</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
 <translation id="2550212893339833758">זיכרון מוחלף</translation>
 <translation id="2550596535588364872">האם להתיר ל-<ph name="EXTENSION_NAME" /> לפתוח את <ph name="FILE_NAME" />?</translation>
@@ -10644,6 +10645,7 @@
 <translation id="8715480913140015283">כרטיסיית הרקע משתמשת במצלמה</translation>
 <translation id="8716931980467311658">‏למחוק את כל האפליקציות ונתוני Linux מתיקיית קובצי Linux ב-<ph name="DEVICE_TYPE" /> הזה?</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
+<translation id="8718560545710680911">שליחת שאלה באמצעות הדף הזה</translation>
 <translation id="8718994464069323380">זוהה מסך מגע</translation>
 <translation id="8719472795285728850">בהאזנה לפעילות תוספים…</translation>
 <translation id="8719665168401479425">שימוש בתנועות פנים לביצוע פעולות</translation>

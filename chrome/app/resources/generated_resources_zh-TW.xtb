@@ -2217,6 +2217,7 @@
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重設 eSIM 卡設定檔快取</translation>
+<translation id="2549766998450508148">請按下 1 到 4 個輔助鍵 (Ctrl、Alt、Shift 或搜尋鍵) 和另外 1 個按鍵，也可以選取單一鍵。</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2550212893339833758">交換的記憶體</translation>
 <translation id="2550596535588364872">要允許「<ph name="EXTENSION_NAME" />」開啟「<ph name="FILE_NAME" />」嗎？</translation>
@@ -10616,6 +10617,7 @@
 <translation id="8715480913140015283">背景分頁正在使用你的攝影機</translation>
 <translation id="8716931980467311658">要將所有 Linux 應用程式和「Linux 檔案」資料夾中的資料從這部 <ph name="DEVICE_TYPE" /> 上刪除嗎？</translation>
 <translation id="8717864919010420084">複製連結</translation>
+<translation id="8718560545710680911">詢問與本頁相關的資訊</translation>
 <translation id="8718994464069323380">已偵測到觸控螢幕</translation>
 <translation id="8719472795285728850">正在監聽擴充功能活動...</translation>
 <translation id="8719665168401479425">使用臉部表情執行動作</translation>

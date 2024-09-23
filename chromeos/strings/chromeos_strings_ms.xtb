@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Muatkan mengikut kawasan imbasan</translation>
 <translation id="1343442362630695901">tasik garam</translation>
 <translation id="1348657754632799065">Bar rakaman</translation>
+<translation id="1350909945461913813">Pastikan anda menyimpan sebarang tugasan</translation>
 <translation id="1367951781824006909">Pilih fail</translation>
 <translation id="1371650399987522809">Maklum balas untuk hiasan latar yang dikuasakan oleh Google AI</translation>
 <translation id="1374385338586507108">Takrifkan</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Versi SDK:</translation>
 <translation id="2016697457005847575">Cuba langkah penyelesaian masalah</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Pilih tema, kemudian pilih perkataan bergaris untuk memeribadikan imej AI anda.</translation>
 <translation id="2045814230297767491">kutleri</translation>
 <translation id="2047316797244836561">Sila sambung kepada rangkaian dan muatkan halaman itu untuk melihat penyelamat skrin.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -319,6 +321,7 @@
 <translation id="242825218556404975">Tiada pertuturan dikesan</translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
 <translation id="2448312741937722512">Jenis</translation>
+<translation id="2468124392950503650">Pilih gesaan untuk membuat atau melihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan gesaan<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gunakan Bantu saya tulis untuk membuat draf atau memperhalus kerja sedia ada, dikuasakan oleh Google AI</translation>
 <translation id="2480572840229215612">ketam</translation>
 <translation id="248546197012830854">Peranti di luar talian. Sambung kepada rangkaian Wi-Fi untuk melihat kandungan bantuan.</translation>
@@ -687,6 +690,7 @@
 <translation id="4474142134969976028">Tiada hasil carian yang sepadan</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
+<translation id="4486524074141928967">Anda akan dilog keluar pada pukul <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan kekunci pengubah suai (ctrl, alt, shift atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antara muka</translation>
 <translation id="4503223151711056411">Anak panah ke kiri</translation>
@@ -910,6 +914,7 @@
 <translation id="5595623927872580850">kelabu</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5600027863942488546">Kekunci <ph name="KEY_NAME" /> diuji</translation>
+<translation id="5613201299517339763">Anda telah dilog keluar</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrak</translation>
@@ -974,6 +979,7 @@
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
 <translation id="5938286923316838007">Tidak dapat membuat nama rakaman untuk kandungan ini</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
+<translation id="5942727615796467094">Pentadbir <ph name="MANAGER" /> telah menetapkan masa untuk <ph name="DEVICE_TYPE" /> boleh digunakan</translation>
 <translation id="594552776027197022">Jana pasangan kunci rawak</translation>
 <translation id="5946538341867151940">Anda belum disambungkan lagi. Jika pembawa mudah alih anda mengesyorkan APN yang tersuai, masukkan maklumat APN dengan memilih "+ APN Baharu"</translation>
 <translation id="5947266287934282605">Jika hari terakhir bulan ialah hari ini, data akan ditetapkan semula pada hari terakhir bulan</translation>
@@ -1065,6 +1071,7 @@
 <translation id="6352210854422428614">planet lain</translation>
 <translation id="6359706544163531585">Lumpuhkan tema cerah</translation>
 <translation id="6359919876285606596">Tindakan ini kekal dan tidak boleh dibuat asal</translation>
+<translation id="6368342879959028556">Apabila anda memilih “Buat dengan AI”, tulis gesaan tersuai. Anda juga boleh memilih “Hiasan latar AI” untuk memilih tema, kemudian memilih perkataan bergaris untuk memeribadikan hiasan latar AI anda.</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6373461326814131011">kolam</translation>
 <translation id="6379086450106841622">Skrin sentuh</translation>
@@ -1088,6 +1095,7 @@
 <translation id="6447630859861661624">Pergi ke tetapan akaun</translation>
 <translation id="6462978824459367242">Butang tambahkan APN kini didayakan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Imbas semula halaman?}=1{Imbas semula halaman {PAGE_NUMBER}?}other{Imbas semula halaman {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">3 gesaan dan output anda yang terbaharu. Anda hanya boleh mengakses ciri ini semasa anda menggunakan Hiasan latar &amp; gaya.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">bot</translation>
 <translation id="64778964625672495">merah gelap</translation>
@@ -1133,6 +1141,16 @@
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">merah jambu merjan</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pilih "Beri saya inspirasi" untuk mendapatkan lebih banyak pilihan imej AI yang unik dan berbeza-beza.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Apabila anda mencipta dengan AI, gesaan akan dihantar kepada pelayan Google AI untuk menjana imej dan meningkatkan produk, tertakluk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Dasar Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI generatif ialah ciri percubaan dan dalam pembangunan awal dengan ketersediaan terhad pada masa ini.</translation>
 <translation id="6673898378497337661">meningkatkan kecerahan papan kekunci</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6694534975463174713">kunci</translation>

@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
+<translation id="6590332670428149473">Vula imenyu yesenzo seqembu lethebhu yeqembu lethebhu elabiwe le-<ph name="TITLE_OF_GROUP" />, umbala <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Ithebhu engu-<ph name="ONE_CHANGED" /> ishintshiwe}one{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe}other{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe}}</translation>
 <translation id="6694634756612002311">Lawula ukwabelana</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu ngethubhu eli-<ph name="TABS_COUNT_ONE" />.}one{Nweba iqembu lethebhu ngethebhu elingu-<ph name="TABS_COUNT_MANY" />.}other{Nweba iqembu lethebhu ngethebhu elingu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="9090098097337832354">Ulwazi olumayelana nalesi sitolo esivaliwe</translation>
 <translation id="9111228330448174435">Bonisa idayalogi ekusungulweni kweqembu lethebhu elisha</translation>
+<translation id="9114502155681725011">Vula imenyu yesenzo seqembu lethebhu seqembu lethebhu le-<ph name="TITLE_OF_GROUP" />, umbala <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Shintsha phakathi komaka kuqembu lethebhu lakho eduze kwangaphansi kwesikrini</translation>
 <translation id="9169594135889675189">Engeza ithebhu entsha kuqembu</translation>
 <translation id="9216898458513705996">Amathebhu azohlala evuliwe kule divayisi kodwa iqembu lizosulwa kuwo wonke amadivayisi angeniswe ku-<ph name="USER_EMAIL" /> ngemvume</translation>

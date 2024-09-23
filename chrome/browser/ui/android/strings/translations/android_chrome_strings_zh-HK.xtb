@@ -297,6 +297,7 @@
 <translation id="2450083983707403292">要重新下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="2451607499823206582">正在追蹤</translation>
 <translation id="2453860139492968684">完成</translation>
+<translation id="2461378706168271257">搜尋分頁</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2468444275314013497">你的瀏覽器安全無虞</translation>
 <translation id="2472163211318554013">登入以充分運用 Chrome 的所有功能</translation>
@@ -601,6 +602,7 @@
 <translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="3873174561423636563">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱網站<ph name="BEGIN_LINK1" />服務條款<ph name="END_LINK1" />。</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3899682235662194879">關閉所有無痕式分頁</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">未瀏覽任何網站</translation>
 <translation id="7656862631699126784">開啟無痕式鎖定</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7663320421139257046">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》。</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
 <translation id="7666185984446444960">已關閉 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>

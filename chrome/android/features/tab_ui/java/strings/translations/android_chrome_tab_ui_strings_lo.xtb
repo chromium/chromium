@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ຍ້າຍແຖບໄປຊ້າຍ</translation>
+<translation id="6590332670428149473">ເປີດເມນູຄຳສັ່ງຂອງກຸ່ມແຖບສຳລັບກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນ, ສີ <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{ປ່ຽນ <ph name="ONE_CHANGED" /> ແຖບແລ້ວ}other{ປ່ຽນ <ph name="MANY_CHANGED" /> ແຖບແລ້ວ}}</translation>
 <translation id="6694634756612002311">ຈັດການການແບ່ງປັນ</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບທີ່ມີ <ph name="TABS_COUNT_ONE" /> ແຖບ.}other{ຂະຫຍາຍກຸ່ມແຖບທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບ.}}</translation>
 <translation id="9090098097337832354">ປິດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແລ້ວ</translation>
 <translation id="9111228330448174435">ສະແດງກ່ອງໂຕ້ຕອບເມື່ອສ້າງກຸ່ມແຖບໃໝ່</translation>
+<translation id="9114502155681725011">ເປີດເມນູຄຳສັ່ງຂອງກຸ່ມແຖບສຳລັບກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" />, ສີ <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">ປ່ຽນໄປມາລະຫວ່າງແຖບຕ່າງໆໃນກຸ່ມແຖບຂອງທ່ານຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ</translation>
 <translation id="9169594135889675189">ເພີ່ມແຖບໃໝ່ໃສ່ກຸ່ມ</translation>
 <translation id="9216898458513705996">ແຖບຈະຍັງເປີດຢູ່ໃນອຸປະກອນນີ້ ແຕ່ລະບົບຈະລຶບກຸ່ມອອກຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" /></translation>

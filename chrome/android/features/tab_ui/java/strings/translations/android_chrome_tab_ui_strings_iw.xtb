@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">הצגת פרטי החנות</translation>
 <translation id="6557858706263317126">‫+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>
+<translation id="6590332670428149473">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{כרטיסייה אחת (<ph name="ONE_CHANGED" />) התעדכנה}one{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}two{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}other{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}}</translation>
 <translation id="6694634756612002311">ניהול אפשרויות השיתוף</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
 <translation id="9111228330448174435">הצגת תיבת דו-שיח בזמן יצירה של קבוצת כרטיסיות חדשה</translation>
+<translation id="9114502155681725011">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">מעבר בין כרטיסיות בקבוצת הכרטיסיות שבחלק התחתון של המסך</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>
 <translation id="9216898458513705996">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>

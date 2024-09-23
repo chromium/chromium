@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mută fila spre stânga</translation>
+<translation id="6590332670428149473">Deschide meniul de acțiuni pentru grupul de file comun <ph name="TITLE_OF_GROUP" />, de culoare <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">Afișează</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> filă modificată}few{<ph name="MANY_CHANGED" /> file modificate}other{<ph name="MANY_CHANGED" /> de file modificate}}</translation>
 <translation id="6694634756612002311">Gestionează permiterea accesului</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file cu <ph name="TABS_COUNT_ONE" /> filă.}few{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
 <translation id="9111228330448174435">Afișează caseta de dialog la crearea unui nou grup de file</translation>
+<translation id="9114502155681725011">Deschide meniul de acțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" />, de culoare <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Comută între filele din grupul de file în partea de jos a ecranului</translation>
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
 <translation id="9216898458513705996">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>

@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Skuif oortjie na links</translation>
+<translation id="6590332670428149473">Maak die oortjiegroep se handelingkieslys vir gedeelde oortjiegroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" /> oop.</translation>
 <translation id="6615455863669487791">Wys my</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> oortjie is verander}other{<ph name="MANY_CHANGED" /> oortjies is verander}}</translation>
 <translation id="6694634756612002311">Bestuur deling</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Vou oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie uit.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies uit.}}</translation>
 <translation id="9090098097337832354">Inligting oor hierdie winkel is toegemaak</translation>
 <translation id="9111228330448174435">Wys dialoog in nuwe oortjiegroepskepping</translation>
+<translation id="9114502155681725011">Maak die oortjiegroep se handelingkieslys vir oortjiegroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" /> oop.</translation>
 <translation id="9150694013019234766">Wissel tussen oortjies in jou oortjiegroep naby die onderkant van die skerm</translation>
 <translation id="9169594135889675189">Voeg nuwe oortjie by groep</translation>
 <translation id="9216898458513705996">Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is</translation>

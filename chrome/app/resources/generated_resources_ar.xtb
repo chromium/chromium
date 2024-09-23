@@ -2222,6 +2222,7 @@
 <translation id="2546991196809436099">‏يمكنك تكبير العناصر على الشاشة. اضغط على مفتاح البحث ‏+ Ctrl ‏+ M لتفعيل ميزة "مكبّر الشاشة" أو إيقافها.</translation>
 <translation id="2548347166720081527">تم منح إذن <ph name="PERMISSION" />.</translation>
 <translation id="2548545707296594436">‏إعادة ضبط ذاكرة التخزين المؤقت الخاصة بالملف الشخصي لبطاقة eSIM</translation>
+<translation id="2549766998450508148">‏اضغط على مفاتيح التعديل من 1 إلى 4 (Ctrl أو Alt أو Shift أو مفتاح البحث) ومفتاح آخر، كما يمكنك اختيار مفتاح واحد.</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
 <translation id="2550212893339833758">ذاكرة مساحة التبديل</translation>
 <translation id="2550596535588364872">هل تريد السماح لـ <ph name="EXTENSION_NAME" /> بفتح <ph name="FILE_NAME" />؟</translation>
@@ -10638,6 +10639,7 @@
 <translation id="8715480913140015283">هناك علامة تبويب خلفية تستخدم الكاميرا</translation>
 <translation id="8716931980467311658">‏هل تريد حذف جميع تطبيقات نظام التشغيل Linux والبيانات الواردة في مجلد ملفات نظام التشغيل Linux من جهاز <ph name="DEVICE_TYPE" /> هذا؟</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
+<translation id="8718560545710680911">طرح سؤال باستخدام هذه الصفحة</translation>
 <translation id="8718994464069323380">تم رصد شاشة تعمل باللمس.</translation>
 <translation id="8719472795285728850">جارٍ الاستماع إلى أنشطة الإضافات...</translation>
 <translation id="8719665168401479425">استخدام إيماءات الوجه لتنفيذ الإجراءات</translation>

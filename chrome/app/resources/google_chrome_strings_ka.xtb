@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">შეცდომა ინსტალაციისას: ინსტალატორის პროცესი ვერ გაეშვა.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> — ქსელში შესვლა — Chrome</translation>
 <translation id="2970681950995291301">Chrome-იდან Google ანგარიში რომ ამოშალოთ, საჭიროა, სისტემიდან გახვიდეთ Chrome-ის პარამეტრების გვერდზე</translation>
+<translation id="2994465299455873643">უზრუნველყოფს დაშიფვრის სერვისებს და დაცულ გზებს <ph name="BROWSER_NAME" />-ის აღდგენისთვის, თუ ის მოძველდება. თუ ეს სერვისი გაითიშება, <ph name="BROWSER_NAME" />-მა შეიძლება დაკარგოს წვდომა დაშიფრულ მონაცემებზე და <ph name="BROWSER_NAME" /> ვეღარ აღდგეს.</translation>
 <translation id="3018957014024118866">ასევე, წაიშალოს მონაცემები Chrome-იდან (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">ხელახლა გაშვება &amp;ChromeOS Flex-ის გასაახლებლად</translation>
 <translation id="3037838751736561277">Google Chrome ფონურ რეჟიმშია.</translation>

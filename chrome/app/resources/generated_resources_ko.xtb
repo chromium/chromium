@@ -2232,6 +2232,7 @@
 <translation id="2546991196809436099">확대하여 화면에 있는 항목을 더 크게 표시할 수 있습니다. 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + M을 사용하세요.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> 권한이 허용됨</translation>
 <translation id="2548545707296594436">eSIM 프로필 캐시 재설정</translation>
+<translation id="2549766998450508148">1~4개의 특수키(Ctrl, Alt, Shift 또는 검색)와 1개의 추가 키를 누르세요. 단일 키를 선택해도 됩니다.</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
 <translation id="2550212893339833758">교체된 메모리</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />에서 <ph name="FILE_NAME" /> 파일을 열도록 허용하시겠습니까?</translation>
@@ -10640,6 +10641,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8715480913140015283">배경 탭에서 카메라를 사용 중입니다.</translation>
 <translation id="8716931980467311658">이 <ph name="DEVICE_TYPE" />에서 Linux 파일 폴더에 있는 모든 Linux 애플리케이션과 데이터를 삭제하시겠습니까?</translation>
 <translation id="8717864919010420084">링크 복사</translation>
+<translation id="8718560545710680911">현재 페이지를 사용하여 요청하기</translation>
 <translation id="8718994464069323380">터치스크린 감지됨</translation>
 <translation id="8719472795285728850">확장 프로그램 활동 감지 중...</translation>
 <translation id="8719665168401479425">얼굴 동작을 사용하여 작업 수행</translation>

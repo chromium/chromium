@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">სკანირებად არეზე მორგება</translation>
 <translation id="1343442362630695901">მარილიანი ტბა</translation>
 <translation id="1348657754632799065">ჩაწერის ზოლი</translation>
+<translation id="1350909945461913813">აუცილებლად შეინახეთ ყველა ნამუშევარი</translation>
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
 <translation id="1371650399987522809">გამოხმაურება Google-ის ხელოვნური ინტელექტის მიერ უზრუნველყოფილ ფონთან დაკავშირებით</translation>
 <translation id="1374385338586507108">განსაზღვრა</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK ვერსია:</translation>
 <translation id="2016697457005847575">გამოცადეთ დეფექტების აღმოფხვრის საფეხურები</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">გენერაციული სურათების პერსონალიზებისთვის აირჩიეთ თემა, შემდეგ კი — ხაზგასმული სიტყვები.</translation>
 <translation id="2045814230297767491">დანა-ჩანგალი</translation>
 <translation id="2047316797244836561">ეკრანმზოგის სანახავად დაუკავშირდით ქსელს და გადატვირთეთ გვერდი.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -319,6 +321,7 @@
 <translation id="242825218556404975">საუბარი არაა ამოცნობილი</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
 <translation id="2448312741937722512">ტიპი</translation>
+<translation id="2468124392950503650">აირჩიეთ მოთხოვნა, რომ შექმნათ ან ნახოთ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />მოთხოვნის სახელმძღვანელო<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ისარგებლეთ დაწერაში დახმარებით, რომ Google-ის ხელოვნური ინტელექტის მეშვეობით შექმნათ მონახაზი, ან დახვეწოთ არსებული ნამუშევარი.</translation>
 <translation id="2480572840229215612">კიბორჩხლები</translation>
 <translation id="248546197012830854">მოწყობილობა ხაზგარეშე რეჟიმშია. დამხმარე კონტენტის სანახავად დაუკავშირდით Wi-Fi ქსელს.</translation>
@@ -687,6 +690,7 @@
 <translation id="4474142134969976028">შესატყვისი შედეგები არ არის</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
+<translation id="4486524074141928967">თქვენ სისტემიდან გამოხვალთ <ph name="TIME" />-ზე</translation>
 <translation id="4500722292849917410">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს მოდიფიკატორი კლავიშის (ctrl, alt, shift ან <ph name="META_KEY" />) მეშვეობით.</translation>
 <translation id="4500966230243561393">ინტერფეისის ფერი</translation>
 <translation id="4503223151711056411">ისარი მარცხნივ</translation>
@@ -910,6 +914,7 @@
 <translation id="5595623927872580850">ნაცრისფერი</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> კლავიში შემოწმებულია</translation>
+<translation id="5613201299517339763">თქვენ სისტემიდან გამოხვედით</translation>
 <translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5630438231335788050">ბაუჰაუსი</translation>
 <translation id="5631759159893697722">რეზიუმე</translation>
@@ -974,6 +979,7 @@
 <translation id="5931523347251946569">ფაილი ვერ მოიძებნა</translation>
 <translation id="5938286923316838007">ამ კონტენტისთვის ჩაწერილი სახელები ვერ შეიქმნება</translation>
 <translation id="5939518447894949180">გადატვირთვა</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" />-ის ადმინისტრატორმა დააყენა, როდის შეიძლება ამ <ph name="DEVICE_TYPE" />-ის გამოყენება</translation>
 <translation id="594552776027197022">გასაღებთა შემთხვევითი წყვილის შექმნა</translation>
 <translation id="5946538341867151940">ინტერნეტთან დაკავშირებული არ ხართ. თუ მობილური ოპერატორი გირჩევთ მორგებულ APN-ს, მის შესახებ ინფორმაციის მისათითებლად აირჩიეთ „+ ახალი APN“</translation>
 <translation id="5947266287934282605">თუ თვის ბოლო დღე წინ უსწრებს მითითებულ დღეს, მონაცემები განულდება თვის ბოლო დღეს</translation>
@@ -1065,6 +1071,7 @@
 <translation id="6352210854422428614">სხვა პლანეტა</translation>
 <translation id="6359706544163531585">ღია თემის გათიშვა</translation>
 <translation id="6359919876285606596">ეს ქმედება სამუდამოა და მისი დაბრუნება შეუძლებელია</translation>
+<translation id="6368342879959028556">„ხელოვნური ინტელექტის დახმარების შექმნის“ არჩევის შემთხვევაში დაწერეთ ინდივიდუალური მოთხოვნა. ან მონიშნეთ „AI ფონი“, რომ თქვენი AI ფონის პერსონალიზებისთვის აირჩიოთ ფონი და შემდეგ — ხაზგასმული სიტყვები.</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="6373461326814131011">ტბორი</translation>
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
@@ -1088,6 +1095,7 @@
 <translation id="6447630859861661624">ანგარიშის პარამეტრებზე გადასვლა</translation>
 <translation id="6462978824459367242">APN-ის დამატების ღილაკი ახლა ჩართულია</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ხელახლა სკანირება?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}}</translation>
+<translation id="6468146470109254228">თქვენი ბოლო 3 მოთხოვნა და შედეგი. ამაზე წვდომა შეგიძლიათ ფონისა და სტილის გამოყენებისას.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ნავები</translation>
 <translation id="64778964625672495">მუქი წითელი</translation>
@@ -1133,6 +1141,16 @@
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659594942844771486">ჩანართი</translation>
 <translation id="66621959568103627">მარჯნისფერი ვარდისფერი</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ხელოვნური ინტელექტით შექმნილი სურათების უფრო უნიკალური და განსხვავებული ვარიანტების მისაღებად აირჩიეთ „შთაგონების მიღება“.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ხელოვნური ინტელექტის დახმარებით რაიმეს შექმნისას შესაბამისი მოთხოვნა ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს, რომლებიც შემდეგ ქმნის სურათებს და აუმჯობესებს პროდუქტს <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ის კონფიდენციალურობის დებულების<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> შესაბამისად.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          გენერაციული ხელოვნური ინტელექტი ექსპერიმენტული ფუნქციაა, რომელიც შემუშავების ადრეულ სტადიებზეა, ამიტომ მისი ხელმისაწვდომობა შეზღუდულია.</translation>
 <translation id="6673898378497337661">კლავიატურის სიკაშკაშის მომატება</translation>
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="6694534975463174713">საკეტი</translation>

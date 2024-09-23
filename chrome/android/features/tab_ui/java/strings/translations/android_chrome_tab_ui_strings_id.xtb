@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Lihat info toko</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pindahkan tab ke kiri</translation>
+<translation id="6590332670428149473">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" /> yang dibagikan.</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab diubah}other{<ph name="MANY_CHANGED" /> tab diubah}}</translation>
 <translation id="6694634756612002311">Kelola pembagian</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Luaskan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Informasi tentang toko ini ditutup</translation>
 <translation id="9111228330448174435">Tampilkan dialog terkait pembuatan grup tab baru</translation>
+<translation id="9114502155681725011">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Beralih ke tab lain pada grup tab Anda di dekat bagian bawah layar</translation>
 <translation id="9169594135889675189">Tambahkan tab baru ke grup</translation>
 <translation id="9216898458513705996">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>

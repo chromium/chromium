@@ -2226,6 +2226,7 @@
 <translation id="2546991196809436099">Дэлгэц дээрх зүйлсийг томсгохын тулд томруулна уу. Томруулагчийг асаах болон унтраахын тулд Search + Ctrl + M-г ашиглана уу.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="2548545707296594436">eSIM профайлын завсрын санах ойг шинэчлэх</translation>
+<translation id="2549766998450508148">1-4 тохируулагч товч (ctrl, alt, shift, хайлт) болон өөр нэг товчийг дарна уу. Та мөн нэг товч сонгох боломжтой.</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
 <translation id="2550212893339833758">Солилцсон санах ой</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />-д <ph name="FILE_NAME" />-г нээхийг зөвшөөрөх үү?</translation>
@@ -10630,6 +10631,7 @@
 <translation id="8715480913140015283">Дэвсгэр таб таны камерыг ашиглаж байна</translation>
 <translation id="8716931980467311658">Linux-н бүх апп болон Linux-н файлуудын фолдерт байгаа өгөгдлөө энэ <ph name="DEVICE_TYPE" />-с устгах уу?</translation>
 <translation id="8717864919010420084">Холбоосыг хуулах</translation>
+<translation id="8718560545710680911">Энэ хуудсыг ашиглан асуух</translation>
 <translation id="8718994464069323380">Мэдрэмтгий дэлгэц илрүүлсэн</translation>
 <translation id="8719472795285728850">Өргөтгөлийн үйл ажиллагааг сонсож байна...</translation>
 <translation id="8719665168401479425">Үйлдлийг гүйцэтгэхэд царайн зангааг ашиглах</translation>

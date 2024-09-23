@@ -700,6 +700,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
 <translation id="2239100178324503013">Hantar sekarang</translation>
 <translation id="2241693394036365668">Fail dimuat turun</translation>
+<translation id="2242389809734574253">Simpan IBAN ditutup.</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Ibu/bapa anda belum mengatakan OK</translation>
 <translation id="2247789808226901522">Kad tamat tempoh</translation>
@@ -1238,6 +1239,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3272112314896217187">Masukkan kod pengesahan <ph name="NUMBER_OF_DIGITS" /> angka</translation>
 <translation id="3272643614306383237">Kurang daripada 1 MB. Sesetengah laman mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
 <translation id="3273738040255912340">Pentadbir anda boleh membuat perubahan pada profil dan penyemak imbas anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. Aktiviti pada peranti ini juga mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Simpan IBAN yang dibuka pada ketinggian penuh.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda membuka fail ini dalam <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda membuka fail ini dalam <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi anda, <ph name="ENROLLMENT_DOMAIN" />, telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -2126,6 +2128,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4881808915112408168">24 x 31.5 in</translation>
 <translation id="4882314601499260499">Tiada dasar pengguna digunakan. Untuk menambah dasar pengguna, organisasi anda mesti <ph name="LINK_BEGIN" />mengesahkan domain anda<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Masukkan pertanyaan atau gesaan anda</translation>
 <translation id="4885030148564729407">Percutian Bulan Madu &amp; Romantik</translation>
 <translation id="4885256590493466218">Buat bayaran menggunakan <ph name="CARD_DETAIL" /> semasa daftar keluar</translation>
 <translation id="4887406273302438710">Lindungi kata laluan dengan Windows Hello</translation>
@@ -2585,6 +2588,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="572328651809341494">Tab terbaharu</translation>
 <translation id="5723873695528696965">Kawal dan atur cara semula peranti MIDI anda</translation>
 <translation id="5725297205162868298">Pintasan tidak boleh dimulakan dengan aksara @: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Boleh meminta untuk menggunakan ciri lanjutan pencetak</translation>
 <translation id="5729442113829771034">Pendidikan Awal Kanak-kanak</translation>
 <translation id="5730040223043577876">Chrome mengesyorkan penetapan semula kata laluan jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="5732392974455271431">Ibu bapa anda boleh menyahsekatnya untuk anda</translation>
@@ -2596,6 +2600,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5743684619253032786">Produk Penjagaan Kuku</translation>
 <translation id="5745733273847572235">Boleh meminta lokasi anda</translation>
 <translation id="5750869797196646528">Penjejakan tangan</translation>
+<translation id="5752327398324808817">Masukkan perkataan</translation>
 <translation id="5759751709240058861">Gunakan &amp; alihkan kamera anda</translation>
 <translation id="5763042198335101085">Masukkan alamat e-mel yang sah</translation>
 <translation id="5764725887548570807">Format asalan tidak sah.</translation>
@@ -3091,6 +3096,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6671169470640320959">Pembiayaan Auto</translation>
 <translation id="6671697161687535275">Alih keluar cadangan borang daripada Chromium?</translation>
 <translation id="6677351035258626477">Makanan Segera</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Apabila anda membuat pembelian dalam Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai pilihan}other{Apabila anda membuat pembelian dalam Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai pilihan}}</translation>
 <translation id="6681790815630918386">CVC disimpan</translation>
 <translation id="6683022854667115063">Fon kepala</translation>
 <translation id="6687230248707087982">Sampul (Kosong)</translation>
@@ -3107,6 +3113,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6696575039575740785">Pemasangan apl web tidak dibenarkan</translation>
 <translation id="6698097747703777657">Tidak menerima kod? <ph name="BEGIN_LINK" />Dapatkan kod baharu<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Dicipta:</translation>
+<translation id="6698769547327354196">Untuk mematikan Pix dalam Chrome, akses <ph name="BEGIN_LINK1" />tetapan pembayaran<ph name="END_LINK1" /> anda</translation>
 <translation id="67007264085648978">Pelaras masa</translation>
 <translation id="6702851555558236418">Perisian Audio &amp; Muzik</translation>
 <translation id="6702919718839027939">Pembentangan</translation>
@@ -3408,6 +3415,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operasi Perniagaan</translation>
+<translation id="7244061187185055290">Dalam beberapa perkataan, perihalkan perkara yang anda cari</translation>
 <translation id="7251437084390964440">Konfigurasi rangkaian tidak mematuhi standard ONC. Sebahagian konfigurasi tidak boleh diimport.
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>

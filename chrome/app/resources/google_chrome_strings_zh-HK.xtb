@@ -301,6 +301,7 @@
 <translation id="4680828127924988555">取消安裝</translation>
 <translation id="469553575393225953">來源不明的擴充程式、應用程式和主題可能會損害您的裝置。Chrome 建議您只透過「Chrome 網上應用程式商店」安裝這些項目</translation>
 <translation id="4710245680469034439">透過大自然、藝術作品等內容為靈感的主題來自訂瀏覽器。</translation>
+<translation id="4720851490453439956">Google 更新程式內部服務</translation>
 <translation id="4724676981607797757">由於發生不支援通訊協定的錯誤，因此無法安裝。</translation>
 <translation id="4728575227883772061">安裝失敗，錯誤原因不明。如果目前正在執行 Google Chrome，請先關閉，然後再試一次。</translation>
 <translation id="4741235124132242877">已固定！你可透過工具列再次使用「Google 智能鏡頭」</translation>
@@ -464,6 +465,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6893363893008038481">從 Chrome 移除帳戶</translation>
 <translation id="6896758677409633944">複製</translation>
+<translation id="6930294499209825">確保 Google 軟件為最新版本。如果此服務停用或停止，Google 軟件就無法保持最新狀態，導致潛在安全漏洞無法修正，功能亦可能無法正常運作。如果此服務沒有用於任何 Google 軟件，就會自行解除安裝。</translation>
 <translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
@@ -513,6 +515,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7477130805345743099">Chrome 將會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="7481213027396403996">取得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入後，你可以在 Chrome 使用 Google 帳戶儲存的密碼和其他資料。按 <ph name="SHORTCUT" /> 可以更改 Google 服務設定。</translation>
+<translation id="7514258452813684157">Google 更新程式服務</translation>
 <translation id="7515191208480168435">你可以固定「Google 智能鏡頭」方便存取</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證此擴充程式的來源</translation>

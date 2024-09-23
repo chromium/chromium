@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2239100178324503013">ახლავე გაგზავნა</translation>
 <translation id="2241693394036365668">ფაილის ჩამოტვირთვა</translation>
+<translation id="2242389809734574253">„IBAN-ის შენახვის“ გვერდი გაიხსნა.</translation>
 <translation id="2246264294482514010">10 x 12 დუიმი</translation>
 <translation id="2246480341630108201">თქვენს მშობელს ჯერ არ დაუდასტურებია</translation>
 <translation id="2247789808226901522">ბარათს მოქმედების ვადა ამოეწურა</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3272112314896217187">შეიყვანეთ <ph name="NUMBER_OF_DIGITS" />-ციფრიანი დამადასტურებელი კოდი</translation>
 <translation id="3272643614306383237">1 მბაიტზე ნაკლები. შესაძლოა, ზოგიერთი საიტი შემდეგ ვიზიტზე უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="3273738040255912340">თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის და ბრაუზერის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს სხვა აუცილებელი ამოცანები. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმაც. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">„IBAN-ის შენახვის“ გვერდი გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="3281350579597955952">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}}</translation>
 <translation id="3282085321714087552">თქვენმა ორგანიზაციამ (<ph name="ENROLLMENT_DOMAIN" />) მითითებულ ვებსაიტებს გაუგზავნა გარკვეული ინფორმაცია, როგორიცაა პარამეტრები თუ წესები.</translation>
 <translation id="3286372614333682499">პორტრეტი</translation>
@@ -2125,6 +2127,7 @@
 <translation id="4881695831933465202">გახსნა</translation>
 <translation id="4881808915112408168">24 x 31,5 დუიმი</translation>
 <translation id="4882314601499260499">მომხმარებლის წესები გამოყენებული არ არის. მომხმარებლის წესების დასამატებლად თქვენმა ორგანიზაციამ უნდა <ph name="LINK_BEGIN" />დაადასტუროს თქვენი დომენი<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">შეიყვანეთ თქვენი შეკითხვა ან მოთხოვნა</translation>
 <translation id="4885030148564729407">საქორწილო და რომანტიკული მოგზაურობა</translation>
 <translation id="4885256590493466218">ანგარიშსწორებისას გადაიხადეთ <ph name="CARD_DETAIL" />-ით</translation>
 <translation id="4887406273302438710">დაიცავით პაროლები Windows Hello-ს მეშვეობით</translation>
@@ -2584,6 +2587,7 @@
 <translation id="572328651809341494">ბოლო ჩანართები</translation>
 <translation id="5723873695528696965">თქვენი MIDI-მოწყობილობების კონტროლი და გადაპროგრამება</translation>
 <translation id="5725297205162868298">დაუშვებელია მალსახმობის დაწყება @ სიმბოლოთი: „<ph name="SHORTCUT_NAME" />“</translation>
+<translation id="5728246486828755318">შეიძლება მოითხოვოს პრინტერის გაფართოებული ფუნქციების გამოყენება</translation>
 <translation id="5729442113829771034">ადრეული ასაკის ბავშვთა განათლება</translation>
 <translation id="5730040223043577876">Chrome გირჩევთ, გადააყენოთ თქვენი პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="5732392974455271431">მისი განბლოკვა თქვენს მშობლებს შეუძლიათ</translation>
@@ -2595,6 +2599,7 @@
 <translation id="5743684619253032786">ფრჩხილების მოვლის საშუალებები</translation>
 <translation id="5745733273847572235">შეუძლია თქვენი მდებარეობის გარკვევის თხოვნა</translation>
 <translation id="5750869797196646528">ხელების მოძრაობაზე თვალის დევნება</translation>
+<translation id="5752327398324808817">შეიყვანეთ ერთი-ორი სიტყვა</translation>
 <translation id="5759751709240058861">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5763042198335101085">შეიყვანეთ ელფოსტის სწორი მისამართი</translation>
 <translation id="5764725887548570807">წყაროს ფორმატი არასწორია.</translation>
@@ -3090,6 +3095,7 @@
 <translation id="6671169470640320959">ავტოკრედიტი</translation>
 <translation id="6671697161687535275">ამოიშალოს ფორმებისთვის განკუთვნილი შემოთავაზება Chromium-იდან?</translation>
 <translation id="6677351035258626477">სწრაფი კვება</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6681790815630918386">CVC შეინახა</translation>
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6687230248707087982">კონვერტი (უბრალო)</translation>
@@ -3106,6 +3112,7 @@
 <translation id="6696575039575740785">ვებ-აპების ინსტალაცია აკრძალულია</translation>
 <translation id="6698097747703777657">არ მიგიღიათ კოდი? <ph name="BEGIN_LINK" />ახალი კოდის მოთხოვნა<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">შექმნილია:</translation>
+<translation id="6698769547327354196">Chrome-ში Pix-ის გამოსართავად გადადით თქვენს <ph name="BEGIN_LINK1" />გადახდის პარამეტრებში<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">დროითი სკრაბერი</translation>
 <translation id="6702851555558236418">აუდიო და მუსიკალური პროგრამული უზრუნველყოფა</translation>
 <translation id="6702919718839027939">პრეზენტირება</translation>
@@ -3406,6 +3413,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ბიზნეს-ოპერაციები</translation>
+<translation id="7244061187185055290">რამდენიმე სიტყვით აღწერეთ, რას ეძებთ</translation>
 <translation id="7251437084390964440">ქსელის კონფიგურაცია არ შეესაბამება ONC სტანდარტს. კონფიგურაციის ნაწილის იმპორტი შეიძლება ვერ მოხერხდეს.
 დამატებითი დეტალები:
 <ph name="DEBUG_INFO" /></translation>

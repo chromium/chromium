@@ -297,6 +297,7 @@
 <translation id="2450083983707403292">Θέλετε να ξεκινήσετε ξανά τη λήψη του αρχείου <ph name="FILE_NAME" />;</translation>
 <translation id="2451607499823206582">Παρακολούθηση</translation>
 <translation id="2453860139492968684">Τέλος</translation>
+<translation id="2461378706168271257">Αναζήτηση στις καρτέλες</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
 <translation id="2468444275314013497">Το πρόγραμμα περιήγησής σας φαίνεται εντάξει</translation>
 <translation id="2472163211318554013">Συνδεθείτε για να αξιοποιήσετε πλήρως το Chrome</translation>
@@ -601,6 +602,7 @@
 <translation id="3847319713229060696">Συμβάλλετε στη βελτίωση της ασφάλειας στον ιστό για όλους</translation>
 <translation id="3856096718352044181">Βεβαιωθείτε ότι πρόκειται για έγκυρο πάροχο ή δοκιμάστε ξανά αργότερα</translation>
 <translation id="3858860766373142691">Όνομα</translation>
+<translation id="3873174561423636563">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το <ph name="FIELDS_STRING" /> σε αυτόν τον ιστότοπο. Ανατρέξτε στους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
 <translation id="3899682235662194879">Κλείσιμο όλων των καρτελών ανώνυμης περιήγησης</translation>
 <translation id="3900966090527141178">Εξαγωγή κωδικών πρόσβασης</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">Δεν υπάρχουν ιστότοποι</translation>
 <translation id="7656862631699126784">Ενεργοποίηση κλειδώματος ανώνυμης περιήγησης</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7663320421139257046">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το <ph name="FIELDS_STRING" /> σε αυτόν τον ιστότοπο. Δείτε την <ph name="BEGIN_LINK1" />πολιτική απορρήτου<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
 <translation id="7665369617277396874">Προσθήκη λογαριασμού</translation>
 <translation id="766587987807204883">Εδώ εμφανίζονται άρθρα τα οποία μπορείτε να διαβάσετε ακόμη και εκτός σύνδεσης</translation>
 <translation id="7666185984446444960">Η ομάδα καρτελών <ph name="TAB_GROUPS_AND_TABS_PART" /> εκλεισε</translation>
