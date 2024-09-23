@@ -5247,7 +5247,7 @@
   {
     "name": "improve-parcel-detection",
     "owners": [ "djean@google.com", "smcgruer@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 136
   },
   {
     "name": "improved-keyboard-shortcuts",
