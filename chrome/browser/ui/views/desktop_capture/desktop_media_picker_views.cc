@@ -1079,6 +1079,13 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
 }
 
 void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
+#if BUILDFLAG(IS_MAC)
+  // This function is called when the native picker has been cancelled or has
+  // experienced an error. In both these cases for MacOS, we should reject the
+  // dialog and close it.
+  Reject();
+  return;
+#else
   if (!tabbed_pane_) {
     Reject();
     return;
@@ -1099,6 +1106,7 @@ void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
   tabbed_pane_->SelectTabAt(fallback_pane_index);
 
   GetCancelButton()->RequestFocus();
+#endif
 }
 
 void DesktopMediaPickerDialogView::OnCanReselectChanged(

@@ -1087,6 +1087,51 @@ TEST_F(DelegatedSourceListTest, NoFallbackPaneReject) {
   EXPECT_EQ(DesktopMediaID(), WaitForPickerDone());
 }
 
+#if BUILDFLAG(IS_MAC)
+// Creates a picker with the default fallback pane and verifies that when it
+// gets notified that the delegated source list is dismissed that it closes the
+// picker.
+TEST_F(DelegatedSourceListTest, ClosePickerOnSourceListDismissed) {
+  // WebContents is the fallback type, so need to have a picker with it and
+  // one other type.
+  SetSourceTypes({DesktopMediaList::Type::kWebContents},
+                 {DesktopMediaList::Type::kScreen});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Switch to the screen pane and simulate the user dismissing the native
+  // picker.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  media_lists_[DesktopMediaList::Type::kScreen]
+      ->OnDelegatedSourceListDismissed();
+
+  // Dismissing the delegated source list should close the picker
+  // without a selection.
+  EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
+}
+
+// The delegated picker experience on MacOS (using SCContentSharingPicker)
+// starts the capture immediately after the user has made their choice, so
+// the reselect button is not enabled for any capture type
+TEST_F(DelegatedSourceListTest, ReselectButtonAbsent) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Ensure that we don't have a reselect button for the non-delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we don't have a reselect button for the screen delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we don't have a reselect button for window delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
+}
+
+#else
 // Creates a picker with the default fallback pane and verifies that when it
 // gets notified that the delegated source list is dismissed that it switches
 // to that pane.
@@ -1142,35 +1187,9 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
   ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
 }
 
-#if BUILDFLAG(IS_MAC)
-
-// The delegated picker experience on MacOS (using SCContentSharingPicker)
-// starts the capture immediately after the user has made their choice, so
-// the reselect button is not enabled for any capture type
-TEST_F(DelegatedSourceListTest, ReselectButtonPresence) {
-  SetSourceTypes(
-      {DesktopMediaList::Type::kWebContents},
-      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
-  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
-
-  // Ensure that we don't have a reselect button for the non-delegated type.
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
-  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
-
-  // Ensure that we don't have a reselect button for the screen delegated type.
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
-  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
-
-  // Ensure that we don't have a reselect button for window delegated type.
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
-  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
-}
-
-#else
-
 // Verify that the reselect button is only present on the delegated source list
 // type panes.
-TEST_F(DelegatedSourceListTest, ReselectButtonPresence) {
+TEST_F(DelegatedSourceListTest, ReselectButtonEnabled) {
   SetSourceTypes(
       {DesktopMediaList::Type::kWebContents},
       {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
