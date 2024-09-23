@@ -25,6 +25,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -362,7 +363,7 @@ OmniboxPageHandler::OmniboxPageHandler(
     mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver)
     : profile_(profile), receiver_(this, std::move(receiver)) {
   observation_.Observe(
-      AutocompleteControllerEmitter::GetForBrowserContext(profile_));
+      AutocompleteControllerEmitterFactory::GetForBrowserContext(profile_));
   controller_ = CreateController(false);
   ml_disabled_controller_ = CreateController(true);
 }

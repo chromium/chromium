@@ -416,8 +416,7 @@ static_library("browser") {
     deps += [
       "//components/history_clusters/core",
       "//components/history_embeddings",
-      "//components/keyed_service/content",
-      "//content/public/browser",
+      "//content/public/common",
     ]
   }
 
@@ -601,7 +600,6 @@ if (is_android) {
       "//components/browser_ui/widget/android:java",
       "//components/embedder_support/android:util_java",
       "//components/security_state/core:security_state_enums_java",
-      "//content/public/android:content_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",

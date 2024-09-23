@@ -19,6 +19,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
+#include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/api/omnibox.h"
@@ -159,7 +161,8 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 
-  OmniboxInputWatcher::GetForBrowserContext(profile)->NotifyInputEntered();
+  OmniboxInputWatcherFactory::GetForBrowserContext(profile)
+      ->NotifyInputEntered();
 }
 
 // static
@@ -342,7 +345,7 @@ void OmniboxSendSuggestionsFunction::OnParsedDescriptionsAndStyles(
 void OmniboxSendSuggestionsFunction::NotifySuggestionsReady() {
   Profile* profile =
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
-  OmniboxSuggestionsWatcher::GetForBrowserContext(profile)
+  OmniboxSuggestionsWatcherFactory::GetForBrowserContext(profile)
       ->NotifySuggestionsReady(&*params_);
 }
 
@@ -386,7 +389,7 @@ void OmniboxSetDefaultSuggestionFunction::SetDefaultSuggestion(
     const omnibox::DefaultSuggestResult& suggestion) {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (SetOmniboxDefaultSuggestion(profile, extension_id(), suggestion)) {
-    OmniboxSuggestionsWatcher::GetForBrowserContext(
+    OmniboxSuggestionsWatcherFactory::GetForBrowserContext(
         profile->GetOriginalProfile())
         ->NotifyDefaultSuggestionChanged();
   }

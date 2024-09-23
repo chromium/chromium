@@ -77,6 +77,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -386,13 +387,13 @@
 #include "chrome/browser/apps/platform_apps/api/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
+#include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
+#include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "components/omnibox/browser/omnibox_input_watcher.h"
-#include "components/omnibox/browser/omnibox_suggestions_watcher.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_extension_api_browser_context_keyed_service_factories.h"
@@ -665,7 +666,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   AutocompleteClassifierFactory::GetInstance();
-  AutocompleteControllerEmitter::EnsureFactoryBuilt();
+  AutocompleteControllerEmitterFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   AutocompleteScoringModelServiceFactory::GetInstance();
 #endif
@@ -1047,8 +1048,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   OfflineItemModelManagerFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
-  OmniboxInputWatcher::EnsureFactoryBuilt();
-  OmniboxSuggestionsWatcher::EnsureFactoryBuilt();
+  OmniboxInputWatcherFactory::GetInstance();
+  OmniboxSuggestionsWatcherFactory::GetInstance();
 #endif
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelServiceFactory::GetInstance();

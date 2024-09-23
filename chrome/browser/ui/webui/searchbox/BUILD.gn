@@ -35,6 +35,7 @@ source_set("searchbox") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/omnibox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_page:resources",
     "//chrome/browser/resources/new_tab_page:resources_grit",

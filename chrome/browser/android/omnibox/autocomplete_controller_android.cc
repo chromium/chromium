@@ -32,6 +32,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -135,7 +136,7 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
   autocomplete_controller_->AddObserver(this);
 
   AutocompleteControllerEmitter* emitter =
-      AutocompleteControllerEmitter::GetForBrowserContext(profile_);
+      AutocompleteControllerEmitterFactory::GetForBrowserContext(profile_);
   if (emitter) {
     autocomplete_controller_->AddObserver(emitter);
   }

@@ -10573,6 +10573,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/devtools",
+      "//chrome/browser/omnibox",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_attributes",
       "//chrome/browser/search",
