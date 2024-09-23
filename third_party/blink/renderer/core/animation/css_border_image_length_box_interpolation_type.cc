@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/css_border_image_length_box_interpolation_type.h"
 
 #include <memory>
@@ -187,7 +182,7 @@ struct SideTypes {
   }
   bool operator!=(const SideTypes& other) const { return !(*this == other); }
 
-  SideType type[kSideIndexCount];
+  std::array<SideType, kSideIndexCount> type;
 };
 
 class UnderlyingSideTypesChecker
@@ -242,7 +237,7 @@ InterpolationValue ConvertBorderImageLengthBox(const BorderImageLengthBox& box,
                                                double zoom) {
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       kSideIndexCount);
-  const BorderImageLength* sides[kSideIndexCount] = {};
+  std::array<const BorderImageLength*, kSideIndexCount> sides{};
   sides[kSideTop] = &box.Top();
   sides[kSideRight] = &box.Right();
   sides[kSideBottom] = &box.Bottom();
@@ -328,7 +323,7 @@ InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
 
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       kSideIndexCount);
-  const CSSValue* sides[kSideIndexCount] = {};
+  std::array<const CSSValue*, kSideIndexCount> sides{};
   sides[kSideTop] = quad->Top();
   sides[kSideRight] = quad->Right();
   sides[kSideBottom] = quad->Bottom();

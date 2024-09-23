@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 
 #include "third_party/blink/renderer/core/animation/property_handle.h"
@@ -109,7 +104,7 @@ const AttributeNameMap& GetSupportedAttributes() {
   if (supported_attributes.empty()) {
     // Fill the set for the first use.
     // Animatable attributes from http://www.w3.org/TR/SVG/attindex.html
-    const QualifiedName* attributes[] = {
+    const auto attributes = std::to_array<const QualifiedName*>({
         &html_names::kClassAttr,
         &svg_names::kAmplitudeAttr,
         &svg_names::kAzimuthAttr,
@@ -205,10 +200,10 @@ const AttributeNameMap& GetSupportedAttributes() {
         &svg_names::kYAttr,
         &svg_names::kYChannelSelectorAttr,
         &svg_names::kZAttr,
-    };
-    for (size_t i = 0; i < std::size(attributes); i++) {
-      DCHECK(!SVGElement::IsAnimatableCSSProperty(*attributes[i]));
-      supported_attributes.Set(*attributes[i], attributes[i]);
+    });
+    for (const QualifiedName* attribute : attributes) {
+      DCHECK(!SVGElement::IsAnimatableCSSProperty(*attribute));
+      supported_attributes.Set(*attribute, attribute);
     }
   }
   return supported_attributes;

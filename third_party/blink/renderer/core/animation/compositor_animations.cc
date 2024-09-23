@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 
 #include <algorithm>
@@ -80,15 +75,15 @@ namespace blink {
 
 namespace {
 
-constexpr CSSPropertyID kCompositableProperties[] = {
-    CSSPropertyID::kBackdropFilter, CSSPropertyID::kFilter,
-    CSSPropertyID::kOpacity,        CSSPropertyID::kRotate,
-    CSSPropertyID::kScale,          CSSPropertyID::kTransform,
+constexpr auto kCompositableProperties = std::to_array<CSSPropertyID>({
+    CSSPropertyID::kBackdropFilter,
+    CSSPropertyID::kFilter,
+    CSSPropertyID::kOpacity,
+    CSSPropertyID::kRotate,
+    CSSPropertyID::kScale,
+    CSSPropertyID::kTransform,
     CSSPropertyID::kTranslate,
-};
-
-const size_t kNumCompositableCSSProperties =
-    sizeof(kCompositableProperties) / sizeof(kCompositableProperties[0]);
+});
 
 bool ConsiderAnimationAsIncompatible(const Animation& animation,
                                      const Animation& animation_to_add,
@@ -132,8 +127,8 @@ bool HasIncompatibleAnimations(const Element& target_element,
   if (!target_element.HasAnimations())
     return false;
 
-  bool affects_property[kNumCompositableCSSProperties];
-  for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+  std::array<bool, kCompositableProperties.size()> affects_property;
+  for (size_t i = 0; i < kCompositableProperties.size(); i++) {
     PropertyHandle property(CSSProperty::Get(kCompositableProperties[i]));
     affects_property[i] = effect_to_add.Affects(property);
   }
@@ -153,7 +148,7 @@ bool HasIncompatibleAnimations(const Element& target_element,
       continue;
     }
 
-    for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+    for (size_t i = 0; i < kCompositableProperties.size(); i++) {
       if (!affects_property[i])
         continue;
 
@@ -630,8 +625,8 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
   if (!target_element.HasAnimations())
     return;
 
-  bool affects_property[kNumCompositableCSSProperties];
-  for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+  std::array<bool, kCompositableProperties.size()> affects_property;
+  for (size_t i = 0; i < kCompositableProperties.size(); i++) {
     PropertyHandle property(CSSProperty::Get(kCompositableProperties[i]));
     affects_property[i] = effect_to_add.Affects(property);
   }
@@ -651,7 +646,7 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
       continue;
     }
 
-    for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+    for (size_t i = 0; i < kCompositableProperties.size(); i++) {
       if (!affects_property[i])
         continue;
 

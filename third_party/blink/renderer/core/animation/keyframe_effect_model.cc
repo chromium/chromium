@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 
 #include <limits>
@@ -146,16 +141,15 @@ bool KeyframeEffectModelBase::Sample(
 
 namespace {
 
-static const size_t num_compositable_properties = 9;
+using CompositablePropertiesArray = std::array<const CSSProperty*, 9>;
 
-const CSSProperty** CompositableProperties() {
-  static const CSSProperty*
-      kCompositableProperties[num_compositable_properties] = {
-          &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
-          &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
-          &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
-          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor(),
-          &GetCSSPropertyClipPath()};
+const CompositablePropertiesArray& CompositableProperties() {
+  static const CompositablePropertiesArray kCompositableProperties{
+      &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
+      &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
+      &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
+      &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor(),
+      &GetCSSPropertyClipPath()};
   return kCompositableProperties;
 }
 
@@ -233,10 +227,9 @@ bool KeyframeEffectModelBase::SnapshotCompositableProperties(
     ShouldSnapshotKeyframeFunction should_snapshot_keyframe) const {
   EnsureKeyframeGroups();
   bool updated = false;
-  static const CSSProperty** compositable_properties = CompositableProperties();
-  for (size_t i = 0; i < num_compositable_properties; i++) {
+  for (const auto* compositable_property : CompositableProperties()) {
     updated |= SnapshotCompositorKeyFrames(
-        PropertyHandle(*compositable_properties[i]), element, computed_style,
+        PropertyHandle(*compositable_property), element, computed_style,
         parent_style, should_snapshot_property, should_snapshot_keyframe);
   }
 
