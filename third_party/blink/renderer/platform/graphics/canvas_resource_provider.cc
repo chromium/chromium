@@ -324,13 +324,21 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   }
   scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForOverwrite() override {
+  GetBackingClientSharedImageForExternalWrite(
+      gpu::SyncToken* internal_access_sync_token) override {
     DCHECK(is_accelerated_);
 
     if (IsGpuContextLost())
       return nullptr;
 
     WillDrawInternal(false);
+
+    // NOTE: The above invocation of WillDrawInternal() ensures that this
+    // invocation of GetSyncToken() will generate a new sync token.
+    if (internal_access_sync_token) {
+      *internal_access_sync_token = resource_->GetSyncToken();
+    }
+
     return resource_->GetClientSharedImage();
   }
 

@@ -223,10 +223,30 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            int x,
                            int y);
 
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, after flushing the resource and signaling that an external write
+  // will occur on it. The caller should wait on `internal_access_sync_token`
+  // before writing the contents unless the caller's usage model makes such a
+  // wait unnecessary (in which case the client should pass `nullptr` for the
+  // token together with an explanation at the callsite).
   virtual scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForOverwrite() {
+  GetBackingClientSharedImageForExternalWrite(
+      gpu::SyncToken* internal_access_sync_token) {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
+  }
+
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, for the purpose of allowing the caller to overwrite its contents.
+  // First flushes the resource and signals that an external write will occur on
+  // it.
+  // TODO(crbug.com/340922308): Eliminate this method in favor of all callers
+  // calling the above method with explanations at callsites for why they don't
+  // need to wait for any internal writes to finish.
+  virtual scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForOverwrite() {
+    return GetBackingClientSharedImageForExternalWrite(
+        /*internal_access_sync_token=*/nullptr);
   }
   virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
     NOTREACHED_IN_MIGRATION();
