@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -26,6 +27,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,6 +84,12 @@ public class TabStripGroupContextMenuTest {
         mStripLayoutHelper =
                 TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         mModalDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
+    }
+
+    @After
+    public void tearDown() {
+        // Click anywhere to dismiss menu if has not already been dismissed.
+        onView(isRoot()).perform(click());
     }
 
     @Test
@@ -310,50 +318,15 @@ public class TabStripGroupContextMenuTest {
         String title = "2 tabs";
         onView(withText(title)).check(matches(isDisplayed()));
 
-        // Update tab group title.
+        // Update tab group title and verify.
         title = "newTitle";
-        onView(withId(R.id.tab_group_title))
-                .perform(click())
-                .perform(replaceText(title))
-                .perform(pressImeActionButton());
-
-        // Wait until the keyboard is hidden to make sure the edit has taken effect.
-        KeyboardVisibilityDelegate delegate =
-                mActivityTestRule.getActivity().getWindowAndroid().getKeyboardDelegate();
-        CriteriaHelper.pollUiThread(
-                () ->
-                        !delegate.isKeyboardShowing(
-                                mActivityTestRule.getActivity(),
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getCompositorViewHolderForTesting()));
-
-        // Verify the tab group title is updated.
+        updateGroupTitle(title);
         onView(withText(title)).check(matches(isDisplayed()));
 
         // Delete the group title by clearing the edit box and verify its default to "N tabs".
         title = "";
-        onView(withId(R.id.tab_group_title))
-                .perform(click())
-                .perform(replaceText(title))
-                .perform(pressImeActionButton());
-
-        // Wait until the keyboard is hidden to make sure the edit has taken effect.
-        CriteriaHelper.pollUiThread(
-                () ->
-                        !delegate.isKeyboardShowing(
-                                mActivityTestRule.getActivity(),
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getCompositorViewHolderForTesting()));
-
-        // Verify the tab group title is deleted and default to "N tabs.
+        updateGroupTitle(title);
         onView(withText("2 tabs")).check(matches(isDisplayed()));
-
-        // Click anything to dismiss the menu.
-        onView(withText(R.string.open_new_tab_in_group_context_menu_item))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.open_new_tab_in_group_context_menu_item)).perform(click());
     }
 
     @Test
@@ -389,11 +362,6 @@ public class TabStripGroupContextMenuTest {
                 "The blue color should be selected",
                 TabGroupColorId.BLUE,
                 tabGroupModelFilter.getTabGroupColor(mRootId));
-
-        // Click anything to dismiss the menu.
-        onView(withText(R.string.open_new_tab_in_group_context_menu_item))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.open_new_tab_in_group_context_menu_item)).perform(click());
     }
 
     private void prepareStandardState() {
@@ -509,5 +477,36 @@ public class TabStripGroupContextMenuTest {
                             }
                         });
         onViewWaiting(allOf(withId(R.id.tab_group_action_menu_list), isDisplayed()));
+    }
+
+    private void updateGroupTitle(String title) {
+        KeyboardVisibilityDelegate delegate =
+                mActivityTestRule.getActivity().getWindowAndroid().getKeyboardDelegate();
+
+        // Click group title text box to display keyboard for editing.
+        onView(withId(R.id.tab_group_title)).perform(click());
+
+        // Verify keyboard is displayed.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        delegate.isKeyboardShowing(
+                                mActivityTestRule.getActivity(),
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getCompositorViewHolderForTesting()));
+
+        // Enter new title in text box and press "enter" to dismiss keyboard to update group title.
+        onView(withId(R.id.tab_group_title))
+                .perform(replaceText(title))
+                .perform(pressImeActionButton());
+
+        // Verify keyboard is dismissed.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !delegate.isKeyboardShowing(
+                                mActivityTestRule.getActivity(),
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getCompositorViewHolderForTesting()));
     }
 }
