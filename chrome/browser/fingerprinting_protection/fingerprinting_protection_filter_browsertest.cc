@@ -11,10 +11,12 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -33,6 +35,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   GURL url(GetTestUrl(kTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
@@ -88,7 +92,21 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
-  // TODO(https://crbug.com/366267410): Add UKM testing.
+  // Check test UKM recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  // 1 entry for every frame_with_included_script.html (2 from initial load, 1
+  // from redirect)
+  EXPECT_EQ(3u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
+
   // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
   // testing.
   histogram_tester.ExpectBucketCount(
@@ -105,6 +123,8 @@ IN_PROC_BROWSER_TEST_F(
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   GURL url(GetTestUrl(kTestFrameSetPath));
 
   // Disallow loading child frame documents that in turn would end up
@@ -160,6 +180,21 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // Check test UKM recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  // 1 entry for every frame_with_included_script.html (2 from initial load, 1
+  // from redirect)
+  EXPECT_EQ(3u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
+
   // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
   // testing.
   histogram_tester.ExpectBucketCount(
@@ -175,6 +210,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   GURL url(GetTestUrl(kTestFrameSetPath));
 
   // Would disallow loading child frame documents that in turn would end up
@@ -226,6 +263,22 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   ASSERT_TRUE(frame);
   EXPECT_EQ(disallowed_subdocument_url, frame->GetLastCommittedURL());
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // Check test UKM recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  // 1 entry for every frame_with_included_script.html (2 from initial load, 1
+  // from redirect)
+  EXPECT_EQ(3u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    EXPECT_TRUE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
+
   // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
   // testing.
   histogram_tester.ExpectBucketCount(
